@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/provider/registration_provider.dart';
 import 'package:hommie/provider/statedropdownbutton.dart';
+import 'package:hommie/utils/color.dart';
 import 'package:hommie/view/user/login/user_Login.dart';
-import 'package:hommie/view/user/regiser/widgets/user_register_with_google.dart';
 import 'package:hommie/view/user/terms/terms_conditions.dart';
 import 'package:hommie/widgets/cu_inkwell_button.dart';
 import 'package:hommie/widgets/custom_text.dart';
@@ -38,7 +38,7 @@ class UsRegister extends StatelessWidget {
             child: Column(
               children: [
                 SizedBox(
-                  height: ScreenUtil().setHeight(120),
+                  height: 93.h
                 ),
                 CustomText(
                   text: "Register",
@@ -59,11 +59,13 @@ class UsRegister extends StatelessWidget {
                 ),
                 CustomTextField(
                   hintText: "Name",
+                  cursorColor: myColor.background,
                 ),
                 SizedBox(
                   height: ScreenUtil().setHeight(20),
                 ),
                 CustomTextField(
+                  cursorColor: myColor.background,
                   hintText: "Contact No",
                 ),
                 SizedBox(
@@ -73,6 +75,7 @@ class UsRegister extends StatelessWidget {
                   children: [
                     Expanded(
                       child: CustomTextField(
+                        cursorColor: myColor.background,
                         hintText: "state",
                         dropdownButton: DropdownButton<String>(
                           value: stateDropdownButton.dropdownValue,
@@ -103,6 +106,7 @@ class UsRegister extends StatelessWidget {
                     Expanded(
                       child: CustomTextField(
                         hintText: "District",
+                        cursorColor: myColor.background,
                       ),
                     ),
                   ],
@@ -112,12 +116,14 @@ class UsRegister extends StatelessWidget {
                 ),
                 CustomTextField(
                   hintText: "Email",
+                  cursorColor: myColor.background,
                 ),
                 SizedBox(
                   height: ScreenUtil().setHeight(20),
                 ),
                 CustomTextField(
                   hintText: "Password",
+                  cursorColor: myColor.background,
                 ),
                 Row(
                   children: [
@@ -142,11 +148,16 @@ class UsRegister extends StatelessWidget {
                                 builder: (context) => TermsAndConditions(),
                               ));
                         },
-                        child: CustomText(
-                            text: "Terms & conditions",
-                            size: 11,
-                            weight: FontWeight.w400,
-                            color: Color(0xff3FA2F6)))
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(context, "TermsAndConditions");
+                          },
+                          child: CustomText(
+                              text: "Terms & conditions",
+                              size: 11,
+                              weight: FontWeight.w400,
+                              color: Color(0xff3FA2F6)),
+                        ))
                   ],
                 ),
                 SizedBox(
@@ -213,8 +224,37 @@ class UsRegister extends StatelessWidget {
                 SizedBox(
                   height: ScreenUtil().setHeight(25),
                 ),
-                UserRegiserWithGoogle()
+                 Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        InkWell(
+          onTap: () {
+            
+          },
+          child: Container(
+            height: ScreenUtil().setHeight(42),
+            width: ScreenUtil().setWidth(250),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(31),
+              color: Color(0xffFFFFFF)
+            ),
+            child: Row(
+              // mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 23),
+                  child: Image.asset("assets/images/google.png",height: 28,width: 28,),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 15),
+                  child: CustomText(text: "continue with google", size: 14, weight: FontWeight.w400, color: Colors.black),
+                )
               ],
+            ),
+          ),
+        ),
+      ],
+    )              ],
             ),
           ),
         ));

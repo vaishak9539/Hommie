@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hommie/utils/color.dart';
 import 'package:hommie/widgets/custom_text.dart';
 
 class TermsAndConditions extends StatelessWidget {
@@ -7,6 +8,7 @@ class TermsAndConditions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: myColor.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,

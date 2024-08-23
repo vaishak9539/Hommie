@@ -15,11 +15,14 @@ class CustomTextField extends StatelessWidget {
   final FontWeight? fontWeight;
   final double fontSize;
   final IconButton? suffixIcon;
-  final Icon? prefixIcon; 
+  final Icon? prefixIcon;
   final DropdownButton<String>? dropdownButton;
   // final ValueChanged<String>? onChanged;
   final FormFieldValidator<String>? validator;
   final int maxLines;
+  final bool filled;
+  final Color? fillColor;
+  final Color? cursorColor;
 
   CustomTextField({
     Key? key,
@@ -38,9 +41,12 @@ class CustomTextField extends StatelessWidget {
     this.dropdownButton,
     this.suffixIcon,
     this.prefixIcon,
+    this.filled = false,
+    this.fillColor,
     // this.onChanged,
     this.validator,
     this.maxLines = 1,
+    this.cursorColor,
   }) : super(key: key);
 
   @override
@@ -48,7 +54,7 @@ class CustomTextField extends StatelessWidget {
     return Padding(
       padding: outlinePadding,
       child: TextFormField(
-        cursorColor: Colors.white,
+        cursorColor: cursorColor,
         controller: controller,
         keyboardType: keyboardType,
         obscureText: obscureText,
@@ -63,35 +69,33 @@ class CustomTextField extends StatelessWidget {
           ),
         ),
         decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: GoogleFonts.poppins(
-            textStyle: TextStyle(
-              color: textColor!.withOpacity(0.6),
-              fontWeight: fontWeight,
-              fontSize: fontSize,
+            hintText: hintText,
+            hintStyle: GoogleFonts.poppins(
+              textStyle: TextStyle(
+                color: textColor!.withOpacity(0.6),
+                fontWeight: fontWeight,
+                fontSize: fontSize,
+              ),
             ),
-          ),
-          prefixIcon: prefixIcon,
-           suffixIcon: dropdownButton != null
-              ? dropdownButton 
-              : suffixIcon,
-          contentPadding: contentPadding,
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: borderColor,
-              width: borderWidth,
+            prefixIcon: prefixIcon,
+            suffixIcon: dropdownButton != null ? dropdownButton : suffixIcon,
+            contentPadding: contentPadding,
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: borderColor,
+                width: borderWidth,
+              ),
+              borderRadius: BorderRadius.circular(borderRadius),
             ),
-            borderRadius: BorderRadius.circular(borderRadius),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: borderColor,
-              width: borderWidth,
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: borderColor,
+                width: borderWidth,
+              ),
+              borderRadius: BorderRadius.circular(borderRadius),
             ),
-            
-            borderRadius: BorderRadius.circular(borderRadius),
-          ),
-        ),
+            filled: filled,
+            fillColor: fillColor),
       ),
     );
   }
@@ -111,8 +115,6 @@ class CuTextField extends StatelessWidget {
   final double fontSize;
   final FormFieldValidator<String>? validator;
   final int maxLines;
-  final bool filled;
-  final Color? fillColor;
 
   CuTextField({
     this.controller,
@@ -122,15 +124,13 @@ class CuTextField extends StatelessWidget {
     this.borderColor = Colors.black,
     this.borderWidth = 1.0,
     this.cursorColor = Colors.black54,
-    this.contentPadding = const EdgeInsets.all(13.0),
-    this.outlinePadding = const EdgeInsets.only(left: 20, right: 20),
+    this.contentPadding = const EdgeInsets.all(8.0),
+    this.outlinePadding = const EdgeInsets.only(left: 25, right: 30),
     this.fontWeight = FontWeight.normal,
     this.fontSize = 16.0,
     super.key,
     this.validator,
     this.maxLines = 1,
-    this.filled=false,
-    this.fillColor,
   });
 
   @override
@@ -154,8 +154,6 @@ class CuTextField extends StatelessWidget {
               borderSide: BorderSide(color: borderColor, width: borderWidth)),
           enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: borderColor, width: borderWidth)),
-              filled: filled,
-              fillColor: fillColor
         ),
       ),
     );

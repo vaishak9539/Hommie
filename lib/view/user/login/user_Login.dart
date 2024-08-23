@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/provider/obscuretext_provider.dart';
-import 'package:hommie/view/user/login/widgets/with_google.dart';
+import 'package:hommie/utils/color.dart';
 import 'package:hommie/view/user/regiser/us_register.dart';
 import 'package:hommie/widgets/cu_inkwell_button.dart';
 import 'package:hommie/widgets/cu_text_button.dart';
@@ -23,11 +23,10 @@ class UserLogin extends StatelessWidget {
         decoration: BoxDecoration(
           image: DecorationImage(
             colorFilter: ColorFilter.mode(
-              Colors.black.withOpacity(0.6), 
+              Colors.black.withOpacity(0.6),
               BlendMode.darken,
             ),
-            image: AssetImage(
-                'assets/images/unsplash_yHg6p8vW_Is.png'),
+            image: AssetImage('assets/images/unsplash_yHg6p8vW_Is.png'),
             fit: BoxFit.cover,
           ),
         ),
@@ -35,7 +34,7 @@ class UserLogin extends StatelessWidget {
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             SizedBox(
-              height: ScreenUtil().setHeight(293),
+              height: 250.h,
             ),
             Padding(
               padding: const EdgeInsets.only(left: 28),
@@ -60,6 +59,7 @@ class UserLogin extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 20),
               child: CustomTextField(
+                cursorColor: myColor.background,
                 keyboardType: TextInputType.emailAddress,
                 hintText: "Email",
               ),
@@ -67,6 +67,7 @@ class UserLogin extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 20),
               child: CustomTextField(
+                cursorColor: myColor.background,
                 hintText: "Password",
                 obscureText: obscureTextProvider.secureText,
                 suffixIcon: IconButton(
@@ -89,7 +90,8 @@ class UserLogin extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 15),
                   child: CustomTextButton(
                     onPressed: () {
-                      Navigator.pushReplacementNamed(context, "UserForgotPassword");
+                      Navigator.pushReplacementNamed(
+                          context, "UserForgotPassword");
                     },
                     text: "Forgot Password ?",
                     color: Colors.white.withOpacity(0.6),
@@ -99,7 +101,7 @@ class UserLogin extends StatelessWidget {
               ],
             ),
             SizedBox(
-              height: ScreenUtil().setHeight(20),
+              height: 20.h
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -107,13 +109,14 @@ class UserLogin extends StatelessWidget {
                 CustomInkwellButton(
                   text: "Login",
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, "UserButtomNavigation");
+                    Navigator.pushReplacementNamed(
+                        context, "UserButtomNavigation");
                   },
                 ),
               ],
             ),
             SizedBox(
-              height: ScreenUtil().setHeight(20),
+              height: 20.h
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -143,14 +146,14 @@ class UserLogin extends StatelessWidget {
               ],
             ),
             SizedBox(
-              height: ScreenUtil().setHeight(23),
+              height: 23.h,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Container(
-                  height: ScreenUtil().setHeight(2),
-                  width: ScreenUtil().setWidth(100),
+                  height: 2.h,
+                  width: 100.w,
                   color: Colors.white,
                 ),
                 CustomText(
@@ -159,16 +162,46 @@ class UserLogin extends StatelessWidget {
                     weight: FontWeight.w500,
                     color: Colors.white),
                 Container(
-                  height: ScreenUtil().setHeight(2),
-                  width: ScreenUtil().setWidth(100),
+                  height: 2.h,
+                  width: 100.w,
                   color: Colors.white,
                 ),
               ],
             ),
             SizedBox(
-              height: ScreenUtil().setHeight(28),
+              height: 20.h
             ),
-            WithGoogle()
+            Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        InkWell(
+          onTap: () {
+            
+          },
+          child: Container(
+            height: 42,
+            width: 250,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(31),
+              color: Color(0xffFFFFFF)
+            ),
+            child: Row(
+              // mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 23),
+                  child: Image.asset("assets/images/google.png",height: 28,width: 28,),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 15),
+                  child: CustomText(text: "continue with google", size: 14, weight: FontWeight.w400, color: Colors.black),
+                )
+              ],
+            ),
+          ),
+        ),
+      ],
+    )
           ]),
         ),
       ),

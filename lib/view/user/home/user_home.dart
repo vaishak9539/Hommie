@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/utils/color.dart';
 import 'package:hommie/utils/img_path.dart';
 import 'package:hommie/widgets/appbar.dart';
@@ -25,11 +26,15 @@ class Home extends StatelessWidget {
           ),
         ],
       ),
-      body: CustomTextField(
-        contentPadding: EdgeInsets.all(10),
-        borderColor: myColor.textcolor,
-        borderWidth: 1,
-        
+      body: SizedBox(
+        height: 33.h,
+        child: CustomTextField(
+          contentPadding: EdgeInsets.all(10),
+          prefixIcon: Icon(Icons.search_rounded),
+          fillColor: myColor.tabcolor,
+          filled: true,
+          borderWidth: 0,
+        ),
       ),
     );
   }

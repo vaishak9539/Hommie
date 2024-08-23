@@ -10,4 +10,4 @@ class RegistrationProvider with ChangeNotifier{
     notifyListeners();
     print("Checkbox is working: $ischecked");
   }
-}
+} 

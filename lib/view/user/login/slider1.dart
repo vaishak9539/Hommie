@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hommie/utils/img_path.dart';
 import 'package:hommie/widgets/cu_text_button.dart';
 import 'package:hommie/widgets/custom_text.dart';
 
@@ -20,7 +21,7 @@ class Slider1 extends StatelessWidget {
               BlendMode.darken,
             ),
             image: AssetImage(
-                'assets/images/unsplash_yHg6p8vW_Is.png'),
+                backgroundimage[1]),
             fit: BoxFit.cover,
           ),
         ),
@@ -29,46 +30,47 @@ class Slider1 extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 450.h
+              height: 430.h
             ),
             Row(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(left: 20, bottom: 2),
+                  padding:  EdgeInsets.only(left: 20.w, bottom: 2.h),
                   child: Container(
-                    height: ScreenUtil().setHeight(100),
-                    width: ScreenUtil().setWidth(2),
+                    height: 100.h,
+                    width: 2.w,
                     color: Colors.white,
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 10, left: 20),
+                  padding:  EdgeInsets.only(bottom: 10.h, left: 20.w),
                   child: CustomText(
                       text: "Find Your\n Dream\n Home Today",
-                      size: 40,
+                      size: 40.sp,
                       weight: FontWeight.bold,
                       color: Colors.white),
                 ),
               ],
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 48),
+              padding:  EdgeInsets.only(left: 48.w),
               child: CustomText(
                   text: "Find Your Dream Home Browse Our\nListing Now",
-                  size: 16,
+                  size: 16.sp,
                   weight: FontWeight.w400,
                   color: Colors.white),
             ),
             SizedBox(
-              height: 70,
+              height: 40,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(right: 10),
+                  padding:  EdgeInsets.only(right: 10.w),
                   child: CustomTextButton(
                     text: "Next",
+                    size: 16.sp,
                     color: Colors.white.withOpacity(0.6),
                     onPressed: () {
                       Navigator.pushReplacementNamed(context,"Slider2");

@@ -7,10 +7,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/provider/user_navigation_provider.dart';
 import 'package:hommie/utils/color.dart';
 import 'package:hommie/utils/img_path.dart';
-import 'package:hommie/view/user/home/user_account.dart';
-import 'package:hommie/view/user/home/user_category.dart';
+import 'package:hommie/view/user/home/user_account/user_account.dart';
 import 'package:hommie/view/user/home/user_home.dart';
 import 'package:hommie/view/user/home/user_saved.dart';
+import 'package:hommie/view/user/home/user_category/user_category.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 

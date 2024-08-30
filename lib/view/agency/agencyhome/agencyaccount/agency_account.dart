@@ -6,8 +6,8 @@ import 'package:hommie/model/utils/style/img_path.dart';
 import 'package:hommie/model/utils/widgets/appbar.dart';
 import 'package:hommie/model/utils/widgets/custom_text.dart';
 
-class UserAccount extends StatelessWidget {
-  const UserAccount({super.key});
+class AgencyAccount extends StatelessWidget {
+  const AgencyAccount({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +68,7 @@ class UserAccount extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                Navigator.pushNamed(context, "User Profile");
+                Navigator.pushNamed(context, "AgencyProfile");
               },
               child: Row(
                 children: [
@@ -105,7 +105,7 @@ class UserAccount extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                Navigator.pushNamed(context, "UserHistory");
+                Navigator.pushNamed(context, "AgencyHistory");
               },
               child: Row(
                 children: [
@@ -122,7 +122,7 @@ class UserAccount extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                Navigator.pushNamed(context, "UserTermsAndConditions");
+                Navigator.pushNamed(context, "AgencyTermsAndConditions");
               },
               child: Row(
                 children: [
@@ -139,7 +139,7 @@ class UserAccount extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                Navigator.pushNamed(context, "UserFeedback");
+                Navigator.pushNamed(context, "AgencyFeedback");
               },
               child: Row(
                 children: [
@@ -168,7 +168,7 @@ class UserAccount extends StatelessWidget {
               ),
             InkWell(
               onTap: () {
-                userDeleteAccount(context);
+                agencyDeleteAccount(context);
               },
               child: Row(
                 children: [
@@ -185,7 +185,7 @@ class UserAccount extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                userLogoutdialogbox(context);
+                agencyLogoutdialogbox(context);
               },
               child: Row(
                 children: [

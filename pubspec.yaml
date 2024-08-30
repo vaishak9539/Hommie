@@ -30,13 +30,17 @@ environment:
 dependencies:
   cupertino_icons: ^1.0.6
   curved_navigation_bar: ^1.0.6
+  dropdown_search: ^5.0.6
+  eva_icons_flutter: ^3.1.0
   flutter:
     sdk: flutter
+  flutter_rating_bar: ^4.0.1
   flutter_screenutil: ^5.9.3
   fluttertoast: ^8.2.8
   google_fonts: ^6.2.1
   google_maps_flutter: ^2.7.1
   iconly: ^1.0.1
+  pinput: ^5.0.0
   provider: ^6.1.2
 
 dev_dependencies:

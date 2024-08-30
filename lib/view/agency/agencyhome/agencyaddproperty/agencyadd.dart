@@ -5,8 +5,8 @@ import 'package:hommie/model/utils/style/img_path.dart';
 import 'package:hommie/model/utils/widgets/appbar.dart';
 import 'package:hommie/model/utils/widgets/custom_text.dart';
 
-class UserCategory extends StatelessWidget {
-  const UserCategory({super.key});
+class Agencyadd extends StatelessWidget {
+  const Agencyadd({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,17 +16,18 @@ class UserCategory extends StatelessWidget {
         title: "Category",
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 20),
-            child:IconButton(onPressed: () {
-              Navigator.pushNamed(context, "User Notification");
-            }, icon: Image.asset(
-              icons[1],
-              width: 25,
-            ),)
-          ),
+              padding: const EdgeInsets.only(right: 20),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, "User Notification");
+                },
+                icon: Image.asset(
+                  icons[1],
+                  width: 25.w,
+                ),
+              )),
         ],
       ),
-    
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -37,12 +38,12 @@ class UserCategory extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 InkWell(
-                   onTap: () {
-                Navigator.pushNamed(context, "UserViewHome");
-              },
+                  onTap: () {
+                    Navigator.pushNamed(context, "UserViewHome");
+                  },
                   child: SizedBox(
-                    width: 150,
-                    height: 150,
+                    width: 150.w,
+                    height: 150.h,
                     child: Card(
                       elevation: 10,
                       shadowColor: myColor.textcolor.withOpacity(0.4),
@@ -76,8 +77,8 @@ class UserCategory extends StatelessWidget {
                     Navigator.pushNamed(context, "UserViewVilla");
                   },
                   child: SizedBox(
-                    width: 150,
-                    height: 150,
+                    width: 150.w,
+                    height: 150.h,
                     child: Card(
                       elevation: 10,
                       shadowColor: myColor.textcolor.withOpacity(0.4),
@@ -111,71 +112,71 @@ class UserCategory extends StatelessWidget {
             SizedBox(
               height: 10.h,
             ),
-             Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            SizedBox(
-              width: 150,
-              height: 150,
-              child: Card(
-                elevation: 10,
-                shadowColor: myColor.textcolor.withOpacity(0.4),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.asset(
-                        backgroundimage[1],
-                        color: Colors.black.withOpacity(0.4),
-                        colorBlendMode: BlendMode.darken,
-                        fit: BoxFit.cover,
-                      ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                  width: 150.w,
+                  height: 150.h,
+                  child: Card(
+                    elevation: 10,
+                    shadowColor: myColor.textcolor.withOpacity(0.4),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.asset(
+                            backgroundimage[1],
+                            color: Colors.black.withOpacity(0.4),
+                            colorBlendMode: BlendMode.darken,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Center(
+                          child: CustomText(
+                            text: "text",
+                            size: 15,
+                            weight: FontWeight.w400,
+                            color: myColor.background,
+                          ),
+                        ),
+                      ],
                     ),
-                    Center(
-                      child: CustomText(
-                        text: "text",
-                        size: 15,
-                        weight: FontWeight.w400,
-                        color: myColor.background,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-            Container(
-              width: 150,
-              height: 150,
-              child: Card(
-                elevation: 10,
-                shadowColor: myColor.textcolor.withOpacity(0.4),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.asset(
-                        backgroundimage[1],
-                        color: Colors.black.withOpacity(0.4),
-                        colorBlendMode: BlendMode.darken,
-                        fit: BoxFit.cover,
-                      ),
+                Container(
+                  width: 150.w,
+                  height: 150.h,
+                  child: Card(
+                    elevation: 10,
+                    shadowColor: myColor.textcolor.withOpacity(0.4),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.asset(
+                            backgroundimage[1],
+                            color: Colors.black.withOpacity(0.4),
+                            colorBlendMode: BlendMode.darken,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Center(
+                          child: CustomText(
+                            text: "text",
+                            size: 15,
+                            weight: FontWeight.w400,
+                            color: myColor.background,
+                          ),
+                        ),
+                      ],
                     ),
-                    Center(
-                      child: CustomText(
-                        text: "text",
-                        size: 15,
-                        weight: FontWeight.w400,
-                        color: myColor.background,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
           ],
         ),
       ),

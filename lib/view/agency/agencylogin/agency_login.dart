@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/color.dart';
@@ -5,15 +7,15 @@ import 'package:hommie/model/utils/widgets/cu_inkwell_button.dart';
 import 'package:hommie/model/utils/widgets/cu_text_button.dart';
 import 'package:hommie/model/utils/widgets/custom_text.dart';
 import 'package:hommie/model/utils/widgets/custom_textfield.dart';
-import 'package:hommie/view/user/userprovider/user_provider_class.dart';
+import 'package:hommie/view/agency/agencyprovider/agency_provider_class.dart';
 import 'package:provider/provider.dart';
 
-class UserLogin extends StatelessWidget {
-  const UserLogin({super.key});
+class AgencyLogin extends StatelessWidget {
+  const AgencyLogin({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final userobscureTextProvider = Provider.of<ObscuretextProvider>(context);
+    final agencyObscureTextProvider = Provider.of<AgencyObscuretextOProvider>(context);
     return Scaffold(
       backgroundColor: Colors.black,
       body: Container(
@@ -68,16 +70,16 @@ class UserLogin extends StatelessWidget {
               child: CustomTextField(
                 cursorColor: myColor.background,
                 hintText: "Password",
-                obscureText: userobscureTextProvider.secureText,
+                obscureText: agencyObscureTextProvider.agencySecureText,
                 suffixIcon: IconButton(
                   icon: Icon(
-                    userobscureTextProvider.secureText
+                    agencyObscureTextProvider.agencySecureText
                         ? Icons.visibility_off
                         : Icons.visibility,
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    userobscureTextProvider.checkvisibility();
+                    agencyObscureTextProvider.agencyCheckVisibility();
                   },
                 ),
               ),
@@ -90,7 +92,7 @@ class UserLogin extends StatelessWidget {
                   child: CustomTextButton(
                     onPressed: () {
                       Navigator.pushNamed(
-                          context, "UserForgotPassword");
+                          context, "AgencyForgotPassword");
                     },
                     text: "Forgot Password ?",
                     color: Colors.white.withOpacity(0.6),
@@ -109,7 +111,7 @@ class UserLogin extends StatelessWidget {
                   text: "Login",
                   onTap: () {
                     Navigator.pushReplacementNamed(
-                        context, "UserButtomNavigation");
+                        context, "AgencyBottomNav");
                   },
                 ),
               ],
@@ -127,7 +129,7 @@ class UserLogin extends StatelessWidget {
                     color: Colors.white),
                 InkWell(
                   onTap: () {
-                   Navigator.pushNamed(context,"UserRegister");
+                 Navigator.pushNamed(context, "AgencyRegister");
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(left: 6),

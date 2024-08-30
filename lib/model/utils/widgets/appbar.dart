@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hommie/utils/color.dart';
+import 'package:hommie/model/utils/style/color.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final Color? backgroundColor;
+  final Color? color;
   final List<Widget>? actions;
   final Widget? leading;
   final double? height;
@@ -14,6 +15,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     Key? key,
     required this.title,
     this.backgroundColor = myColor.background,
+    this.color=Colors.black,
     this.actions,
     this.leading,
     this.height = kToolbarHeight,
@@ -29,7 +31,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         style: GoogleFonts.poppins(
           textStyle: TextStyle(
             fontWeight: FontWeight.w500,
-            color: Colors.black,
+            color: color,
             fontSize: size ?? 20,
           ),
         ),

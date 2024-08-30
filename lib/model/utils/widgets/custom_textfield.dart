@@ -115,6 +115,8 @@ class CuTextField extends StatelessWidget {
   final double fontSize;
   final FormFieldValidator<String>? validator;
   final int maxLines;
+  final Color? hintStyle;
+  final IconButton? suffixIcon;
 
   CuTextField({
     this.controller,
@@ -131,6 +133,8 @@ class CuTextField extends StatelessWidget {
     super.key,
     this.validator,
     this.maxLines = 1,
+    this.hintStyle,
+    this.suffixIcon,
   });
 
   @override
@@ -149,6 +153,8 @@ class CuTextField extends StatelessWidget {
         ),
         decoration: InputDecoration(
           hintText: hintText,
+          hintStyle: TextStyle(color: hintStyle),
+          suffixIcon: suffixIcon,
           contentPadding: contentPadding,
           focusedBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: borderColor, width: borderWidth)),

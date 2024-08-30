@@ -7,8 +7,8 @@ import 'package:hommie/model/utils/widgets/cu_inkwell_button.dart';
 import 'package:hommie/model/utils/widgets/custom_text.dart';
 import 'package:hommie/model/utils/widgets/custom_textfield.dart';
 
-class UserFeedback extends StatelessWidget {
-  const UserFeedback({super.key});
+class AgencyFeedback extends StatelessWidget {
+  const AgencyFeedback({super.key});
 
   @override
   Widget build(BuildContext context) {

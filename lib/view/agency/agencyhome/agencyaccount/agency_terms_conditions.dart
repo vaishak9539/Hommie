@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:hommie/utils/color.dart';
-import 'package:hommie/widgets/custom_text.dart';
+import 'package:hommie/model/utils/style/color.dart';
+import 'package:hommie/model/utils/widgets/custom_text.dart';
 
-class TermsAndConditions extends StatelessWidget {
-  const TermsAndConditions({super.key});
+class AgencyTermsConditions extends StatelessWidget {
+  const AgencyTermsConditions({super.key});
 
   @override
   Widget build(BuildContext context) {

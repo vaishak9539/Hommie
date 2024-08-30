@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hommie/utils/img_path.dart';
-import 'package:hommie/widgets/cu_text_button.dart';
-import 'package:hommie/widgets/custom_text.dart';
+import 'package:hommie/model/utils/style/img_path.dart';
+import 'package:hommie/model/utils/widgets/cu_text_button.dart';
+import 'package:hommie/model/utils/widgets/custom_text.dart';
 
 class Slider1 extends StatelessWidget {
   const Slider1({super.key});

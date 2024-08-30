@@ -14,7 +14,7 @@ class CustomInkwellButton extends StatelessWidget {
     required this.text,
     this.width = 161,
     this.height = 50,
-    this.color = const Color(0xff028391),
+    this.color =  Colors.teal,
     this.borderRadius = 8.0,
   });
 

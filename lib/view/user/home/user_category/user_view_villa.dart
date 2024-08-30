@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hommie/model/utils/style/color.dart';
+import 'package:hommie/model/utils/style/img_path.dart';
+import 'package:hommie/model/utils/widgets/appbar.dart';
+import 'package:hommie/model/utils/widgets/custom_text.dart';
+import 'package:hommie/view/user/userprovider/user_provider_class.dart';
 import 'package:provider/provider.dart';
-import 'package:hommie/provider/user_villa_saved_provider.dart';
-import 'package:hommie/utils/color.dart';
-import 'package:hommie/utils/img_path.dart';
-import 'package:hommie/widgets/appbar.dart';
-import 'package:hommie/widgets/custom_text.dart';
 
 class UserViewVilla extends StatelessWidget {
   const UserViewVilla({super.key});

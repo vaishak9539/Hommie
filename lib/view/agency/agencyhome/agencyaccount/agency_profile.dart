@@ -6,8 +6,8 @@ import 'package:hommie/model/utils/widgets/appbar.dart';
 import 'package:hommie/model/utils/widgets/cu_inkwell_button.dart';
 import 'package:hommie/model/utils/widgets/custom_textfield.dart';
 
-class UserProfile extends StatelessWidget {
-  const UserProfile({super.key});
+class AgencyProfile extends StatelessWidget {
+  const AgencyProfile({super.key});
 
   @override
   Widget build(BuildContext context) {

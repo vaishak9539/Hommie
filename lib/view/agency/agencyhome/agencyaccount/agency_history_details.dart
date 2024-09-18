@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/model/utils/style/img_path.dart';
-import 'package:hommie/model/utils/widgets/appbar.dart';
-import 'package:hommie/model/utils/widgets/custom_text.dart';
+import 'package:hommie/view/widgets/appbar.dart';
+import 'package:hommie/view/widgets/custom_text.dart';
 
 class AgencyHistoryDetails extends StatelessWidget {
   const AgencyHistoryDetails({super.key});

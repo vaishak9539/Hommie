@@ -3,28 +3,53 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/alert.dart';
 import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/model/utils/style/img_path.dart';
-import 'package:hommie/model/utils/widgets/appbar.dart';
-import 'package:hommie/model/utils/widgets/custom_text.dart';
+import 'package:hommie/view/widgets/appbar.dart';
+import 'package:hommie/view/widgets/custom_text.dart';
+import 'package:hommie/view/user/home/user_account/user_history.dart';
+import 'package:hommie/view/user/home/user_account/user_profile.dart';
+import 'package:hommie/view/user/home/user_account/user_terms_conditions.dart';
+import 'package:hommie/view/user/home/user_notification.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UserAccount extends StatelessWidget {
   const UserAccount({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Future<void> _launchEmail(String email) async {
+  final Uri emailLaunchUri = Uri(
+    scheme: 'mailto',
+    path: email,
+  );
+  try {
+    if (!await launchUrl(emailLaunchUri, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $emailLaunchUri');
+    }
+  } catch (e) {
+    print('Error launching email: $e');
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Could not open email client')),
+    );
+  }
+}
     return Scaffold(
       backgroundColor: myColor.background,
       appBar: CustomAppBar(
+        automaticallyImplyLeading: false,
         title: "Account",
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 20),
-            child:IconButton(onPressed: () {
-              Navigator.pushNamed(context, "User Notification");
-            }, icon: Image.asset(
-              icons[1],
-              width: 25,
-            ),)
-          ),
+              padding: const EdgeInsets.only(right: 20),
+              child: IconButton(
+                onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserNotification(),));
+                },
+                icon: Image.asset(
+                  icons[1],
+                  width: 25,
+                ),
+              )),
         ],
       ),
       body: SingleChildScrollView(
@@ -68,7 +93,8 @@ class UserAccount extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                Navigator.pushNamed(context, "User Profile");
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfile(),));
+
               },
               child: Row(
                 children: [
@@ -105,7 +131,7 @@ class UserAccount extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                Navigator.pushNamed(context, "UserHistory");
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserHistory(),));
               },
               child: Row(
                 children: [
@@ -122,7 +148,7 @@ class UserAccount extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                Navigator.pushNamed(context, "UserTermsAndConditions");
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserTermsAndConditions(),));
               },
               child: Row(
                 children: [
@@ -137,24 +163,12 @@ class UserAccount extends StatelessWidget {
                 ],
               ),
             ),
+           
             InkWell(
               onTap: () {
-                Navigator.pushNamed(context, "UserFeedback");
+                _launchEmail("Vaishakp2024@gmail.com");
               },
               child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 25, left: 20),
-                    child: CustomText(
-                        text: "Feedback",
-                        size: 20,
-                        weight: FontWeight.w400,
-                        color: myColor.textcolor),
-                  ),
-                ],
-              ),
-            ),
-            Row(
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top: 25, left: 20),
@@ -166,6 +180,7 @@ class UserAccount extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
             InkWell(
               onTap: () {
                 userDeleteAccount(context);

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/model/utils/style/img_path.dart';
-import 'package:hommie/model/utils/widgets/appbar.dart';
-import 'package:hommie/model/utils/widgets/cu_inkwell_button.dart';
-import 'package:hommie/model/utils/widgets/custom_textfield.dart';
+import 'package:hommie/view/widgets/appbar.dart';
+import 'package:hommie/view/widgets/cu_inkwell_button.dart';
+import 'package:hommie/view/widgets/custom_textfield.dart';
 
 class UserProfile extends StatelessWidget {
   const UserProfile({super.key});
@@ -20,35 +20,34 @@ class UserProfile extends StatelessWidget {
             SizedBox(
               height: 30.h,
             ),
-           Row(
-  mainAxisAlignment: MainAxisAlignment.center,
-  children: [
-    SizedBox(
-      width: 86.w, 
-      height: 86.h,
-      child: Stack(
-        children: [
-          CircleAvatar(
-            backgroundImage: AssetImage(icons[5]), 
-            radius: 43, 
-          ),
-          Positioned(
-            bottom: -2,
-            right: -11,
-            child: IconButton(
-              onPressed: () {}, 
-              icon: Image.asset(
-                icons[6], 
-                width: 25, 
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 86.w,
+                  height: 86.h,
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: AssetImage(icons[5]),
+                        radius: 43,
+                      ),
+                      Positioned(
+                        bottom: -2,
+                        right: -11,
+                        child: IconButton(
+                          onPressed: () {},
+                          icon: Image.asset(
+                            icons[6],
+                            width: 25,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-    ),
-  ],
-),
-
             SizedBox(
               height: 30.h,
             ),

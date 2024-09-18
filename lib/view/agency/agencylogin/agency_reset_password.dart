@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/color.dart';
-import 'package:hommie/model/utils/widgets/appbar.dart';
-import 'package:hommie/model/utils/widgets/cu_inkwell_button.dart';
-import 'package:hommie/model/utils/widgets/custom_text.dart';
-import 'package:hommie/model/utils/widgets/custom_textfield.dart';
+import 'package:hommie/view/widgets/appbar.dart';
+import 'package:hommie/view/widgets/cu_inkwell_button.dart';
+import 'package:hommie/view/widgets/custom_text.dart';
+import 'package:hommie/view/widgets/custom_textfield.dart';
+import 'package:hommie/view/agency/agencylogin/agency_login.dart';
 
 class AgencyResetPassword extends StatelessWidget {
   const AgencyResetPassword({super.key});
@@ -58,10 +59,10 @@ class AgencyResetPassword extends StatelessWidget {
             hintText: "New Password",
           ),
           SizedBox(
-              height: ScreenUtil().setHeight(30),
+              height:30.h,
             ),
             CustomInkwellButton(onTap: () {
-              Navigator.pushReplacementNamed(context, "AgencyLogin");
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => AgencyLogin(),));
             },
              text: "Next")
         ],),

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/model/utils/style/img_path.dart';
-import 'package:hommie/model/utils/widgets/appbar.dart';
-import 'package:hommie/model/utils/widgets/cu_inkwell_button.dart';
-import 'package:hommie/model/utils/widgets/custom_textfield.dart';
+import 'package:hommie/view/widgets/appbar.dart';
+import 'package:hommie/view/widgets/cu_inkwell_button.dart';
+import 'package:hommie/view/widgets/custom_textfield.dart';
 
 class AgencyProfile extends StatelessWidget {
   const AgencyProfile({super.key});

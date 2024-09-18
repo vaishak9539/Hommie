@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/color.dart';
-import 'package:hommie/model/utils/widgets/appbar.dart';
-import 'package:hommie/model/utils/widgets/cu_inkwell_button.dart';
-import 'package:hommie/model/utils/widgets/custom_text.dart';
+import 'package:hommie/view/widgets/appbar.dart';
+import 'package:hommie/view/widgets/cu_inkwell_button.dart';
+import 'package:hommie/view/widgets/custom_text.dart';
+import 'package:hommie/view/user/login/user_reset_password.dart';
 import 'package:pinput/pinput.dart';
 
 class UserOtpVerification extends StatelessWidget {
@@ -11,19 +12,17 @@ class UserOtpVerification extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final defaultPintheme=PinTheme(
-      width: 56.w,
-      height: 56.h,
-      textStyle: TextStyle(
-        fontSize: 22,
-        color: myColor.textcolor,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.teal.shade100,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.transparent)
-      )
-    );
+    final defaultPintheme = PinTheme(
+        width: 56.w,
+        height: 56.h,
+        textStyle: TextStyle(
+          fontSize: 22,
+          color: myColor.textcolor,
+        ),
+        decoration: BoxDecoration(
+            color: Colors.teal.shade100,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.transparent)));
     return Scaffold(
         extendBodyBehindAppBar: true,
         appBar: CustomAppBar(
@@ -50,10 +49,9 @@ class UserOtpVerification extends StatelessWidget {
                 height: 120.h,
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 20,right: 20),
+                padding: const EdgeInsets.only(left: 20, right: 20),
                 child: CustomText(
-                    text:
-                        "Enter the code to your phone",
+                    text: "Enter the code to your phone",
                     size: 15,
                     weight: FontWeight.w400,
                     color: myColor.background),
@@ -64,10 +62,8 @@ class UserOtpVerification extends StatelessWidget {
                   length: 4,
                   defaultPinTheme: defaultPintheme,
                   focusedPinTheme: defaultPintheme.copyWith(
-                    decoration: defaultPintheme.decoration!.copyWith(
-                      border: Border.all(color: Colors.green)
-                    )
-                  ),
+                      decoration: defaultPintheme.decoration!
+                          .copyWith(border: Border.all(color: Colors.green))),
                   onCompleted: (pin) => debugPrint(pin),
                 ),
               ),
@@ -76,8 +72,7 @@ class UserOtpVerification extends StatelessWidget {
               ),
               CustomInkwellButton(
                   onTap: () {
-                    Navigator.pushNamed(
-                        context, "UserResetPassword");
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserResetPassword(),));
                   },
                   text: "Next")
             ],

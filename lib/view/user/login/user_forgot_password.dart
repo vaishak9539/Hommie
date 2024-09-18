@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/color.dart';
-import 'package:hommie/model/utils/widgets/appbar.dart';
-import 'package:hommie/model/utils/widgets/cu_inkwell_button.dart';
-import 'package:hommie/model/utils/widgets/custom_text.dart';
-import 'package:hommie/model/utils/widgets/custom_textfield.dart';
+import 'package:hommie/view/widgets/appbar.dart';
+import 'package:hommie/view/widgets/cu_inkwell_button.dart';
+import 'package:hommie/view/widgets/custom_text.dart';
+import 'package:hommie/view/widgets/custom_textfield.dart';
+import 'package:hommie/view/user/login/user_otp_verification.dart';
 
 class UserForgotPassword extends StatelessWidget {
   const UserForgotPassword({super.key});
@@ -27,8 +28,7 @@ class UserForgotPassword extends StatelessWidget {
               Colors.black.withOpacity(0.6),
               BlendMode.darken,
             ),
-            image: AssetImage(
-                'assets/images/unsplash_yHg6p8vW_Is.png'),  
+            image: AssetImage('assets/images/unsplash_yHg6p8vW_Is.png'),
             fit: BoxFit.cover,
           ),
         ),
@@ -39,7 +39,7 @@ class UserForgotPassword extends StatelessWidget {
                 height: 120.h,
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 20,right: 20),
+                padding: const EdgeInsets.only(left: 20, right: 20),
                 child: CustomText(
                   text: "Please enter your registered phone number or email",
                   size: 15,
@@ -49,18 +49,17 @@ class UserForgotPassword extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                height: ScreenUtil().setHeight(30),
+                height: 30.h,
               ),
               CustomTextField(
                 hintText: "Enter your Email",
               ),
               SizedBox(
-                height: ScreenUtil().setHeight(30),
+                height: 30.h,
               ),
               CustomInkwellButton(
                   onTap: () {
-                    Navigator.pushNamed(
-                        context, "OtpVerification");
+                    Navigator.push(context,MaterialPageRoute(builder: (context) => UserOtpVerification(),) );
                   },
                   text: "Next")
             ],

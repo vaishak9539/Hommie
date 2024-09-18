@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/color.dart';
-import 'package:hommie/model/utils/widgets/appbar.dart';
-import 'package:hommie/model/utils/widgets/cu_inkwell_button.dart';
-import 'package:hommie/model/utils/widgets/custom_textfield.dart';
+import 'package:hommie/view/widgets/appbar.dart';
+import 'package:hommie/view/widgets/cu_inkwell_button.dart';
+import 'package:hommie/view/widgets/custom_textfield.dart';
 
 class AgencyBadge extends StatelessWidget {
   const AgencyBadge({super.key});
@@ -12,7 +12,9 @@ class AgencyBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: myColor.background,
-      appBar: CustomAppBar(title: "Sales Report"),
+      appBar: CustomAppBar(
+        automaticallyImplyLeading: false,
+        title: "Sales Report"),
       body: SingleChildScrollView(
         child: Column(
           children: [

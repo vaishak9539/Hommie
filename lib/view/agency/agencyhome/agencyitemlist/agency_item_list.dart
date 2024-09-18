@@ -4,25 +4,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/model/utils/style/img_path.dart';
-import 'package:hommie/model/utils/widgets/appbar.dart';
-import 'package:hommie/model/utils/widgets/custom_card.dart';
-import 'package:hommie/model/utils/widgets/custom_text.dart';
+import 'package:hommie/view/widgets/appbar.dart';
+import 'package:hommie/view/widgets/custom_card.dart';
+import 'package:hommie/view/widgets/custom_text.dart';
+import 'package:hommie/view/agency/agencyhome/agency_notification.dart';
+import 'package:hommie/view/agency/agencyhome/agencyitemlist/agency_add_item.dart';
 
-class AgencyHome extends StatelessWidget {
-  const AgencyHome({super.key});
+class AgencyItemList extends StatelessWidget {
+  const AgencyItemList({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: myColor.background,
       appBar: CustomAppBar(
+        automaticallyImplyLeading: false,
         title: "Home",
         actions: [
           Padding(
               padding: const EdgeInsets.only(right: 20),
               child: IconButton(
                 onPressed: () {
-                  Navigator.pushNamed(context,"AgencyNotification");
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => AgencyNotification()));
                 },
                 icon: Image.asset(
                   icons[1],
@@ -214,7 +217,7 @@ class AgencyHome extends StatelessWidget {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           backgroundColor: myColor.maincolor,
           onPressed: () {
-            Navigator.pushNamed(context, "Agencyadd");
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => AgencyaddItem()));
           },
           child: Icon(
             Icons.add,

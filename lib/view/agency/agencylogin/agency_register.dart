@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/color.dart';
-import 'package:hommie/model/utils/widgets/cu_inkwell_button.dart';
-import 'package:hommie/model/utils/widgets/custom_text.dart';
-import 'package:hommie/model/utils/widgets/custom_textfield.dart';
+import 'package:hommie/view/widgets/cu_inkwell_button.dart';
+import 'package:hommie/view/widgets/custom_text.dart';
+import 'package:hommie/view/widgets/custom_textfield.dart';
+import 'package:hommie/view/widgets/dropdown.dart';
+import 'package:hommie/view/agency/agencyhome/agency_bottomnav.dart';
+import 'package:hommie/view/agency/agencyhome/agencyaccount/agency_terms_conditions.dart';
 import 'package:hommie/view/agency/agencyprovider/agency_provider_class.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +16,9 @@ class AgencyRegister extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final agencyCheckboxProvider = Provider.of<AgencyCheckboxProvider>(context);
-    return  Scaffold(
+    final agencyCityProvider = Provider.of<AgencyCityProvider>(context);
+    final agencyStateProvider = Provider.of<AgencyStateProvider>(context);
+    return Scaffold(
         backgroundColor: Colors.black,
         body: Container(
           height: double.infinity,
@@ -21,19 +26,17 @@ class AgencyRegister extends StatelessWidget {
           decoration: BoxDecoration(
             image: DecorationImage(
               colorFilter: ColorFilter.mode(
-                Colors.black
-                    .withOpacity(0.6), 
-                BlendMode.darken, 
+                Colors.black.withOpacity(0.6),
+                BlendMode.darken,
               ),
-              image: AssetImage(
-                  'assets/images/unsplash_yHg6p8vW_Is.png'), 
+              image: AssetImage('assets/images/unsplash_yHg6p8vW_Is.png'),
               fit: BoxFit.cover,
             ),
           ),
           child: SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(height: 93.h),
+                SizedBox(height: 50.h),
                 CustomText(
                   text: "Register",
                   size: 30,
@@ -49,48 +52,57 @@ class AgencyRegister extends StatelessWidget {
                   letterSpacing: 2,
                 ),
                 SizedBox(
-                  height: ScreenUtil().setHeight(20),
+                  height: ScreenUtil().setHeight(18),
                 ),
                 CustomTextField(
                   hintText: "Name",
                   cursorColor: myColor.background,
                 ),
                 SizedBox(
-                  height: ScreenUtil().setHeight(20),
+                  height: ScreenUtil().setHeight(18),
                 ),
                 CustomTextField(
                   cursorColor: myColor.background,
                   hintText: "Contact No",
                 ),
                 SizedBox(
-                  height: ScreenUtil().setHeight(20),
+                  height: ScreenUtil().setHeight(18),
                 ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Expanded(
-                      child: CustomTextField(
-                        cursorColor: myColor.background,
-                        hintText: "state",
-                       
-                      ),
-                    ),
-                    Expanded(
-                      child: CustomTextField(
-                        hintText: "District",
-                        cursorColor: myColor.background,
-                      ),
-                    ),
+                    CuDropdown(
+                        items: agencyStateProvider.agencystate,
+                        onChanged: (value) {
+                          agencyStateProvider.agencySelectedState(value);
+                        },
+                        hintText: "State",
+                        backgroundColor: myColor.background),
+                    CuDropdown(
+                        items: agencyCityProvider.agencyCity,
+                        onChanged: (value) {
+                          agencyCityProvider.agencySelectedCity(value);
+                        },
+                        hintText: "City",
+                        backgroundColor: myColor.background)
                   ],
                 ),
                 SizedBox(
-                  height: ScreenUtil().setHeight(20),
+                  height: ScreenUtil().setHeight(18),
+                ),
+                CustomTextField(
+                  hintText: "Licence or aadhaar No",
+                  cursorColor: myColor.background,
+                ),
+                SizedBox(
+                  height: ScreenUtil().setHeight(18),
                 ),
                 CustomTextField(
                   hintText: "Email",
                   cursorColor: myColor.background,
                 ),
                 SizedBox(
-                  height: ScreenUtil().setHeight(20),
+                  height: ScreenUtil().setHeight(18),
                 ),
                 CustomTextField(
                   hintText: "Password",
@@ -113,7 +125,7 @@ class AgencyRegister extends StatelessWidget {
                         color: Colors.white),
                     InkWell(
                       onTap: () {
-                        Navigator.pushNamed(context, "UserTermsAndConditions");
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => AgencyTermsConditions()));
                       },
                       child: CustomText(
                           text: "Terms & conditions",
@@ -124,12 +136,15 @@ class AgencyRegister extends StatelessWidget {
                   ],
                 ),
                 SizedBox(
-                  height: ScreenUtil().setHeight(15),
+                  height: ScreenUtil().setHeight(13),
                 ),
                 CustomInkwellButton(
                     onTap: () {
-                      Navigator.pushReplacementNamed(
-                          context, "AgencyBottomNav");
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AgencyBottomNav(),
+                          ));
                     },
                     text: "Register"),
                 SizedBox(
@@ -185,7 +200,7 @@ class AgencyRegister extends StatelessWidget {
                   ],
                 ),
                 SizedBox(
-                  height: ScreenUtil().setHeight(25),
+                  height: ScreenUtil().setHeight(20),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

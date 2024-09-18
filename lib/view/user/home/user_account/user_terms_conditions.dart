@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hommie/model/utils/style/color.dart';
-import 'package:hommie/model/utils/widgets/custom_text.dart';
+import 'package:hommie/view/widgets/custom_text.dart';
 
 class UserTermsAndConditions extends StatelessWidget {
   const UserTermsAndConditions({super.key});

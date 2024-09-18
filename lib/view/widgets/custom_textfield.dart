@@ -23,6 +23,7 @@ class CustomTextField extends StatelessWidget {
   final bool filled;
   final Color? fillColor;
   final Color? cursorColor;
+  final TextStyle? hintStyle;
 
   CustomTextField({
     Key? key,
@@ -47,6 +48,7 @@ class CustomTextField extends StatelessWidget {
     this.validator,
     this.maxLines = 1,
     this.cursorColor,
+    this.hintStyle
   }) : super(key: key);
 
   @override
@@ -126,7 +128,7 @@ class CuTextField extends StatelessWidget {
     this.borderColor = Colors.black,
     this.borderWidth = 1.0,
     this.cursorColor = Colors.black54,
-    this.contentPadding = const EdgeInsets.all(8.0),
+    this.contentPadding = const EdgeInsets.only(left: 8,top: 15),
     this.outlinePadding = const EdgeInsets.only(left: 25, right: 30),
     this.fontWeight = FontWeight.normal,
     this.fontSize = 16.0,
@@ -153,7 +155,7 @@ class CuTextField extends StatelessWidget {
         ),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(color: hintStyle),
+          hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
           suffixIcon: suffixIcon,
           contentPadding: contentPadding,
           focusedBorder: UnderlineInputBorder(

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/color.dart';
-import 'package:hommie/model/utils/widgets/appbar.dart';
-import 'package:hommie/model/utils/widgets/cu_inkwell_button.dart';
-import 'package:hommie/model/utils/widgets/custom_text.dart';
-import 'package:hommie/model/utils/widgets/custom_textfield.dart';
+import 'package:hommie/view/widgets/appbar.dart';
+import 'package:hommie/view/widgets/cu_inkwell_button.dart';
+import 'package:hommie/view/widgets/custom_text.dart';
+import 'package:hommie/view/widgets/custom_textfield.dart';
+import 'package:hommie/view/agency/agencylogin/agency_otp_verification.dart';
 
 class AgencyForgotPassword extends StatelessWidget {
   const AgencyForgotPassword({super.key});
@@ -27,8 +28,7 @@ class AgencyForgotPassword extends StatelessWidget {
               Colors.black.withOpacity(0.6),
               BlendMode.darken,
             ),
-            image: AssetImage(
-                'assets/images/unsplash_yHg6p8vW_Is.png'),  
+            image: AssetImage('assets/images/unsplash_yHg6p8vW_Is.png'),
             fit: BoxFit.cover,
           ),
         ),
@@ -39,7 +39,7 @@ class AgencyForgotPassword extends StatelessWidget {
                 height: 120.h,
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 20,right: 20),
+                padding: const EdgeInsets.only(left: 20, right: 20),
                 child: CustomText(
                   text: "Please enter your registered phone number or email",
                   size: 15,
@@ -59,8 +59,11 @@ class AgencyForgotPassword extends StatelessWidget {
               ),
               CustomInkwellButton(
                   onTap: () {
-                    Navigator.pushNamed(
-                        context, "AgencyOtpVerification");
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AgencyOtpVerification(),
+                        ));
                   },
                   text: "Next")
             ],

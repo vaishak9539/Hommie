@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/color.dart';
-import 'package:hommie/model/utils/widgets/appbar.dart';
-import 'package:hommie/model/utils/widgets/cu_inkwell_button.dart';
-import 'package:hommie/model/utils/widgets/custom_text.dart';
+import 'package:hommie/view/widgets/appbar.dart';
+import 'package:hommie/view/widgets/cu_inkwell_button.dart';
+import 'package:hommie/view/widgets/custom_text.dart';
+import 'package:hommie/view/agency/agencylogin/agency_reset_password.dart';
 import 'package:pinput/pinput.dart';
 
 class AgencyOtpVerification extends StatelessWidget {
@@ -76,8 +77,7 @@ class AgencyOtpVerification extends StatelessWidget {
               ),
               CustomInkwellButton(
                   onTap: () {
-                    Navigator.pushNamed(
-                        context, "AgencyResetPassword");
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => AgencyResetPassword(),));
                   },
                   text: "Next")
             ],

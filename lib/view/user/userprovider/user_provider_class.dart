@@ -33,11 +33,11 @@ class RegistrationProvider with ChangeNotifier {
 //* USER STATE SELECTION PROVIDER
 
 class UserStateDropdownProvider with ChangeNotifier {
-  String _userstateValue = "Kerala";
+  String _userstateValue = "";
 
   String get userstateValue => _userstateValue;
 
-  final List<String> state = [
+  final List<String> userstates = [
     "Kerala",
   ];
 
@@ -53,7 +53,7 @@ class UserCityDropdownProvider with ChangeNotifier {
 
   String get userCityValue => _userCityValue;
 
-  final List<String> city = [
+  final List<String> usercity = [
     "Kozhikode",
     "Wayanad",
     "Palakkad",
@@ -109,5 +109,17 @@ class UserVillaSavedProvider with ChangeNotifier {
     _userVillaSavedList[index] = !_userVillaSavedList[index];
     notifyListeners();
     print("Villa Saved :${isvillaSaved(index)}");
+  }
+}
+
+class SmoothIndicatorProvider with ChangeNotifier {
+  int _activeIndex = 0;
+
+  int get activeIndex => _activeIndex;
+
+  void currentActiveIndex(index) {
+    _activeIndex = index;
+    notifyListeners();
+    print("Slider Indicator : $activeIndex");
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hommie/model/utils/style/color.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/img_path.dart'; // Make sure this has a valid path for icons
 import 'package:hommie/view/user/home/user_account/user_account.dart';
 import 'package:hommie/view/user/home/user_category/user_category.dart';
@@ -25,14 +25,14 @@ class UserBottomNavigation extends StatelessWidget {
 
     return Scaffold(
       bottomNavigationBar: NavigationBar(
-        height: 60,
+        height: 55.h,
         elevation: 0,
         selectedIndex: userNavigationProvider.currentIndex,
         onDestinationSelected: (int index) {
           userNavigationProvider.userNavigationCurrentIndex(index);
         },
-        backgroundColor: myColor.background,
-        indicatorColor: Colors.teal[200],
+        backgroundColor: Colors.grey[200],
+        indicatorColor: Colors.teal[300],
         animationDuration: Durations.short4,
         destinations: [
           NavigationDestination(

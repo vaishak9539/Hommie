@@ -1,27 +1,43 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/model/utils/style/img_path.dart';
-import 'package:hommie/model/utils/widgets/cu_inkwell_button.dart';
-import 'package:hommie/model/utils/widgets/custom_text.dart';
+import 'package:hommie/view/widgets/cu_inkwell_button.dart';
+import 'package:hommie/view/widgets/custom_text.dart';
+import 'package:hommie/view/user/home/user_category/user_agency_profile_view.dart';
+import 'package:hommie/view/user/userprovider/user_provider_class.dart';
+import 'package:provider/provider.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class UserPropertyView extends StatelessWidget {
   const UserPropertyView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final smoothIndicatorProvider =
+        Provider.of<SmoothIndicatorProvider>(context);
     return Scaffold(
         body: Stack(
       children: [
-        SizedBox(
-          height: 390.h,
-          width: double.infinity,
-          child: Image.asset(
-            backgroundimage[1],
-            height: 400,
-            fit: BoxFit.cover,
-          ),
-        ),
+        CarouselSlider.builder(
+            itemCount: backgroundimage.length,
+            itemBuilder: (context, index, realIndex) {
+              return SizedBox(
+                width: double.infinity,
+                child: Image.asset(
+                  backgroundimage[index],
+                  height: 390.h,
+                  fit: BoxFit.cover,
+                ),
+              );
+            },
+            options: CarouselOptions(
+              height: 390.h,
+              onPageChanged: (index, reason) {
+                smoothIndicatorProvider.currentActiveIndex(index);
+              },
+            )),
         Padding(
           padding: const EdgeInsets.only(top: 30, left: 10),
           child: IconButton(
@@ -45,16 +61,65 @@ class UserPropertyView extends StatelessWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: AnimatedSmoothIndicator(
+                      activeIndex: smoothIndicatorProvider.activeIndex,
+                      count: backgroundimage.length,
+                      effect: JumpingDotEffect(
+                        dotHeight: 8,
+                        dotWidth: 8,
+                        activeDotColor: Colors.red,
+                        dotColor: Colors.grey,
+                        spacing: 8,
+                      ),
+                    ),
+                  ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                       Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(left: 20, top: 25),
+                        padding: const EdgeInsets.only(left: 23,top: 5),
                         child: CustomText(
-                            text: "Greenvally Villa",
-                            size: 20,
+                            text: "₹20,0000",
+                            size: 18,
                             weight: FontWeight.w500,
                             color: myColor.textcolor),
                       ),
+                    ],
+                  ),
+                      // Padding(
+                      //   padding: const EdgeInsets.only(left: 20, top: 20),
+                      //   child: CustomText(
+                      //       text: "Greenvally Villa",
+                      //       size: 17,
+                      //       weight: FontWeight.w500,
+                      //       color: myColor.textcolor),
+                      // ),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.start,
+                      //   children: [
+                      //     Padding(
+                      //       padding: const EdgeInsets.only(right: 23, top: 15),
+                      //       child: CustomText(
+                      //           text: "₹20,0000",
+                      //           size: 18,
+                      //           weight: FontWeight.w500,
+                      //           color: myColor.textcolor),
+                      //     ),
+                      //   ],
+                      // ),
+                       Padding(
+                        padding: const EdgeInsets.only(right: 25),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => UserAgencyProfileView(),));
+                          },
+                          child: CircleAvatar(backgroundImage: AssetImage(icons[5]),)),
+                      )
                     ],
                   ),
                   Row(
@@ -71,28 +136,29 @@ class UserPropertyView extends StatelessWidget {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.only(left: 8, top: 5),
                         child: Column(
-                          children: [
+                          children: const [
                             Text("Golden bazhar building,\nPalazhi road")
                           ],
                         ),
-                      )
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 20),
-                        child: CustomText(
-                            text: "20,0000",
-                            size: 20,
-                            weight: FontWeight.w500,
-                            color: myColor.textcolor),
                       ),
                     ],
                   ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.start,
+                  //   children: [
+                  //     Padding(
+                  //       padding: const EdgeInsets.only(left: 23,top: 5),
+                  //       child: CustomText(
+                  //           text: "₹20,0000",
+                  //           size: 18,
+                  //           weight: FontWeight.w500,
+                  //           color: myColor.textcolor),
+                  //     ),
+                  //   ],
+                  // ),
+                  Divider(),
                   Row(
                     children: [
                       Padding(
@@ -340,7 +406,7 @@ class UserPropertyView extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: CustomInkwellButton(
-                width: 330, height: 45, onTap: () {}, text: "Contact Now"),
+                width: 330.w, height: 45.h, onTap: () {}, text: "Contact Now"),
           ),
         )
       ],

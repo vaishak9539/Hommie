@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:hommie/model/utils/widgets/cu_inkwell_button.dart';
+import 'package:hommie/view/widgets/cu_inkwell_button.dart';
+import 'package:hommie/view/admin/admin_login.dart';
+import 'package:hommie/view/agency/agencylogin/agency_login.dart';
+import 'package:hommie/view/user/login/slider1.dart';
 
 class Select  extends StatelessWidget {
   const Select ({super.key});
@@ -15,16 +18,23 @@ class Select  extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               CustomInkwellButton(onTap: () {
-                Navigator.pushReplacementNamed(context,"Slider1");
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Slider1(),));
               }, text: "User"),
             ],
           ),
           Padding(
             padding: const EdgeInsets.only(top: 10),
             child: CustomInkwellButton(onTap: () {
-              Navigator.pushNamed(context,"AgencyLogin");
+              Navigator.push(context, MaterialPageRoute(builder: (context) => AgencyLogin(),));
             }, text: "Agency"),
           ),
+          Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: CustomInkwellButton(onTap: () {
+              Navigator.push(context,MaterialPageRoute(builder: (context) => AdminLogin(),));
+            }, text: "Admin"),
+          ),
+         
         ],
       ),
     );

@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/model/utils/style/img_path.dart';
-import 'package:hommie/model/utils/widgets/appbar.dart';
-import 'package:hommie/model/utils/widgets/custom_card.dart';
-import 'package:hommie/model/utils/widgets/custom_text.dart';
+import 'package:hommie/view/widgets/appbar.dart';
+import 'package:hommie/view/widgets/custom_card.dart';
+import 'package:hommie/view/widgets/custom_text.dart';
+import 'package:hommie/view/agency/agencyhome/agencyaccount/agency_history_details.dart';
 
 class AgencyHistory extends StatelessWidget {
   const AgencyHistory({super.key});
@@ -13,12 +14,17 @@ class AgencyHistory extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: myColor.background,
-      appBar: CustomAppBar(title: "History"),
+      appBar: CustomAppBar(
+        automaticallyImplyLeading: false,
+        title: "History"),
       body: Padding(
         padding: const EdgeInsets.only(left: 10, top: 20),
         child: InkWell(
           onTap: () {
-            Navigator.pushNamed(context, "AgencyHistoryDetails");
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => AgencyHistoryDetails()));
           },
           child: CustomCard(
             elevation: 2,

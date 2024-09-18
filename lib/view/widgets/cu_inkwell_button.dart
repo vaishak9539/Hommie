@@ -5,7 +5,7 @@ class CustomInkwellButton extends StatelessWidget {
   final String text;
   final double width;
   final double height;
-  final Color color;
+  final Color? color;
   final double borderRadius;
 
   CustomInkwellButton({
@@ -14,7 +14,7 @@ class CustomInkwellButton extends StatelessWidget {
     required this.text,
     this.width = 161,
     this.height = 50,
-    this.color =  Colors.teal,
+    this.color,
     this.borderRadius = 8.0,
   });
 
@@ -31,7 +31,7 @@ class CustomInkwellButton extends StatelessWidget {
           width: width,
           height: height,
           decoration: BoxDecoration(
-            color: color,
+            color: Color(0xff08A9A9),
             borderRadius: BorderRadius.circular(borderRadius),
           ),
           alignment: Alignment.center,

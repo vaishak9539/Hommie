@@ -1,11 +1,13 @@
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/color.dart';
-import 'package:hommie/model/utils/widgets/cu_inkwell_button.dart';
-import 'package:hommie/model/utils/widgets/custom_text.dart';
-import 'package:hommie/model/utils/widgets/custom_textfield.dart';
-import 'package:hommie/model/utils/widgets/dropdown.dart';
+import 'package:hommie/view/widgets/cu_inkwell_button.dart';
+import 'package:hommie/view/widgets/custom_text.dart';
+import 'package:hommie/view/widgets/custom_textfield.dart';
+import 'package:hommie/view/widgets/dropdown.dart';
+import 'package:hommie/view/user/home/user_account/user_terms_conditions.dart';
+import 'package:hommie/view/user/home/user_bottomnavigation.dart';
+import 'package:hommie/view/user/login/user_Login.dart';
 import 'package:hommie/view/user/userprovider/user_provider_class.dart';
 import 'package:provider/provider.dart';
 
@@ -27,9 +29,8 @@ class UserRegister extends StatelessWidget {
           decoration: BoxDecoration(
             image: DecorationImage(
               colorFilter: ColorFilter.mode(
-                Colors.black
-                    .withOpacity(0.6), // Set opacity of the overlay color
-                BlendMode.darken, // Choose a blend mode
+                Colors.black.withOpacity(0.6),
+                BlendMode.darken,
               ),
               image: AssetImage(
                   'assets/images/unsplash_yHg6p8vW_Is.png'), // Your image here
@@ -55,115 +56,48 @@ class UserRegister extends StatelessWidget {
                   letterSpacing: 2,
                 ),
                 SizedBox(
-                  height: ScreenUtil().setHeight(20),
+                  height: 20.h,
                 ),
                 CustomTextField(
                   hintText: "Name",
                   cursorColor: myColor.background,
                 ),
-                SizedBox(
-                  height: ScreenUtil().setHeight(20),
-                ),
+                SizedBox(height: 20.h),
                 CustomTextField(
                   cursorColor: myColor.background,
                   hintText: "Contact No",
                 ),
                 SizedBox(
-                  height: ScreenUtil().setHeight(20),
+                  height: 20.h,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    // CuDropdown(
-                    //     items: userstateDropdownProvider.state,
-                    //     onChanged: (newValue) {
-                    //       userstateDropdownProvider.userSelectedState(newValue);
-                    //     },
-                    //     hintText: "State",
-                    //     backgroundColor: myColor.background)
-                    SizedBox(
-                      width: 150,
-                      child: DropdownSearch<String>(
-                        popupProps: PopupProps.menu(
-                            showSelectedItems: true,
-                            fit: FlexFit.loose,
-                            menuProps:
-                                MenuProps(backgroundColor: myColor.background),
-                            constraints: BoxConstraints(
-                                maxHeight: 200.h, maxWidth: 200.w)),
-                        items: userstateDropdownProvider.state,
-                        dropdownDecoratorProps: DropDownDecoratorProps(
-                            dropdownSearchDecoration: InputDecoration(
-                                contentPadding: EdgeInsets.all(8),
-                                suffixIconColor:
-                                    myColor.background.withOpacity(0.8),
-                                fillColor: Colors.transparent,
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                      color: myColor.background, width: 2),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                      color: myColor.background, width: 2),
-                                ),
-                                hintText: "State",
-                                hintStyle: TextStyle(
-                                    color:
-                                        myColor.background.withOpacity(0.6)))),
+                    CuDropdown(
+                        items: userstateDropdownProvider.userstates,
                         onChanged: (newValue) {
                           userstateDropdownProvider.userSelectedState(newValue);
                         },
-                      ),
-                    ),
-                    SizedBox(
-                      width: 150,
-                      child: DropdownSearch<String>(
-                        popupProps: PopupProps.menu(
-                            showSelectedItems: true,
-                            fit: FlexFit.loose,
-                            menuProps:
-                                MenuProps(backgroundColor: myColor.background),
-                            constraints: BoxConstraints(
-                                maxHeight: 200.h, maxWidth: 200.w)),
-                        items: userCityDropdownProvider.city,
-                        dropdownDecoratorProps: DropDownDecoratorProps(
-                            dropdownSearchDecoration: InputDecoration(
-                                contentPadding: EdgeInsets.all(8),
-                                suffixIconColor:
-                                    myColor.background.withOpacity(0.8),
-                                fillColor: Colors.transparent,
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                      color: myColor.background, width: 2),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                      color: myColor.background, width: 2),
-                                ),
-                                hintText: "city",
-                                hintStyle: TextStyle(
-                                    color:
-                                        myColor.background.withOpacity(0.6)))),
+                        hintText: "StateA",
+                        backgroundColor: myColor.background),
+                    CuDropdown(
+                        items: userCityDropdownProvider.usercity,
                         onChanged: (value) {
                           userCityDropdownProvider.userSelectedCity(value);
                         },
-                      ),
-                    ),
+                        hintText: "City",
+                        backgroundColor: myColor.background),
                   ],
                 ),
                 SizedBox(
-                  height: ScreenUtil().setHeight(20),
+                  height: 20.h,
                 ),
                 CustomTextField(
                   hintText: "Email",
                   cursorColor: myColor.background,
                 ),
                 SizedBox(
-                  height: ScreenUtil().setHeight(20),
+                  height: 20.h,
                 ),
                 CustomTextField(
                   hintText: "Password",
@@ -186,7 +120,7 @@ class UserRegister extends StatelessWidget {
                         color: Colors.white),
                     InkWell(
                       onTap: () {
-                        Navigator.pushNamed(context, "UserTermsAndConditions");
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => UserTermsAndConditions(),));
                       },
                       child: CustomText(
                           text: "Terms & conditions",
@@ -197,16 +131,16 @@ class UserRegister extends StatelessWidget {
                   ],
                 ),
                 SizedBox(
-                  height: ScreenUtil().setHeight(15),
+                  height: 15.h,
                 ),
                 CustomInkwellButton(
                     onTap: () {
-                      Navigator.pushReplacementNamed(
-                          context, "UserButtomNavigation");
+                      Navigator.pushReplacement(
+                          context, MaterialPageRoute(builder: (context) => UserBottomNavigation(),));
                     },
                     text: "Register"),
                 SizedBox(
-                  height: ScreenUtil().setHeight(15),
+                  height: 15.h,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -218,7 +152,7 @@ class UserRegister extends StatelessWidget {
                         color: Colors.white),
                     InkWell(
                         onTap: () {
-                          Navigator.pushNamed(context, "UserLoginPage");
+                          Navigator.push(context,MaterialPageRoute(builder: (context) => UserLogin(),) );
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(left: 6),
@@ -230,15 +164,13 @@ class UserRegister extends StatelessWidget {
                         ))
                   ],
                 ),
-                SizedBox(
-                  height: ScreenUtil().setHeight(15),
-                ),
+                SizedBox(height: 15.h),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Container(
-                      height: ScreenUtil().setHeight(2),
-                      width: ScreenUtil().setWidth(100),
+                      height: 2.h,
+                      width: 100.w,
                       color: Colors.white,
                     ),
                     CustomText(
@@ -247,14 +179,14 @@ class UserRegister extends StatelessWidget {
                         weight: FontWeight.w500,
                         color: Colors.white),
                     Container(
-                      height: ScreenUtil().setHeight(2),
-                      width: ScreenUtil().setWidth(100),
+                      height: 2.h,
+                      width: 100.w,
                       color: Colors.white,
                     ),
                   ],
                 ),
                 SizedBox(
-                  height: ScreenUtil().setHeight(25),
+                  height: 25.h,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -262,8 +194,8 @@ class UserRegister extends StatelessWidget {
                     InkWell(
                       onTap: () {},
                       child: Container(
-                        height: ScreenUtil().setHeight(42),
-                        width: ScreenUtil().setWidth(250),
+                        height: 42.h,
+                        width: 250.w,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(31),
                             color: Color(0xffFFFFFF)),
@@ -274,8 +206,8 @@ class UserRegister extends StatelessWidget {
                               padding: const EdgeInsets.only(left: 23),
                               child: Image.asset(
                                 "assets/images/google.png",
-                                height: 28,
-                                width: 28,
+                                height: 28.h,
+                                width: 28.w,
                               ),
                             ),
                             Padding(

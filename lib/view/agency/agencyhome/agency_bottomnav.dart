@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/model/utils/style/img_path.dart';
-import 'package:hommie/view/agency/agencyhome/agencyaccount/agency_account.dart';
 import 'package:hommie/view/agency/agencyhome/agency_badge.dart';
 import 'package:hommie/view/agency/agencyhome/agency_history.dart';
-import 'package:hommie/view/agency/agencyhome/agencyaddproperty/agency_home.dart';
+import 'package:hommie/view/agency/agencyhome/agencyaccount/agency_account.dart';
+import 'package:hommie/view/agency/agencyhome/agencyitemlist/agency_item_list.dart';
 import 'package:hommie/view/agency/agencyprovider/agency_provider_class.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +16,7 @@ class AgencyBottomNav extends StatelessWidget {
     final agencyNavigationProvider =
         Provider.of<AgencyNavigationProvider>(context);
     List<Widget> pages = [
-      const AgencyHome(),
+      const AgencyItemList(),
       const AgencyBadge(),
       const AgencyHistory(),
       const AgencyAccount(),
@@ -30,8 +29,8 @@ class AgencyBottomNav extends StatelessWidget {
         onDestinationSelected: (int index) {
           agencyNavigationProvider.agencyNavigationCurrentIndex(index);
         },
-        backgroundColor: myColor.background,
-        indicatorColor: Colors.teal[200],
+       backgroundColor: Colors.grey[200],
+        indicatorColor: Colors.teal[300],
         animationDuration: Durations.short4,
         destinations: [
           NavigationDestination(
@@ -41,7 +40,7 @@ class AgencyBottomNav extends StatelessWidget {
                       size: 23,
                     )
                   : Icon(IconlyLight.home),
-              label: "Home"),
+              label: "Home",),
           NavigationDestination(
               icon: agencyNavigationProvider.currentIndex == 1
                   ? Image.asset(

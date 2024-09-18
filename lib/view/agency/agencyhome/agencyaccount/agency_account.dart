@@ -3,8 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/alert.dart';
 import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/model/utils/style/img_path.dart';
-import 'package:hommie/model/utils/widgets/appbar.dart';
-import 'package:hommie/model/utils/widgets/custom_text.dart';
+import 'package:hommie/view/widgets/appbar.dart';
+import 'package:hommie/view/widgets/custom_text.dart';
+import 'package:hommie/view/agency/agencyhome/agency_history.dart';
+import 'package:hommie/view/agency/agencyhome/agency_notification.dart';
+import 'package:hommie/view/agency/agencyhome/agencyaccount/agency_profile.dart';
+import 'package:hommie/view/agency/agencyhome/agencyaccount/agency_terms_conditions.dart';
 
 class AgencyAccount extends StatelessWidget {
   const AgencyAccount({super.key});
@@ -15,16 +19,22 @@ class AgencyAccount extends StatelessWidget {
       backgroundColor: myColor.background,
       appBar: CustomAppBar(
         title: "Account",
+        automaticallyImplyLeading: false,
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 20),
-            child:IconButton(onPressed: () {
-              Navigator.pushNamed(context, "User Notification");
-            }, icon: Image.asset(
-              icons[1],
-              width: 25,
-            ),)
-          ),
+              padding: const EdgeInsets.only(right: 20),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AgencyNotification()));
+                },
+                icon: Image.asset(
+                  icons[1],
+                  width: 25,
+                ),
+              )),
         ],
       ),
       body: SingleChildScrollView(
@@ -68,7 +78,8 @@ class AgencyAccount extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                Navigator.pushNamed(context, "AgencyProfile");
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => AgencyProfile()));
               },
               child: Row(
                 children: [
@@ -105,7 +116,8 @@ class AgencyAccount extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                Navigator.pushNamed(context, "AgencyHistory");
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => AgencyHistory()));
               },
               child: Row(
                 children: [
@@ -122,7 +134,7 @@ class AgencyAccount extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                Navigator.pushNamed(context, "AgencyTermsAndConditions");
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => AgencyTermsConditions()));
               },
               child: Row(
                 children: [
@@ -137,35 +149,19 @@ class AgencyAccount extends StatelessWidget {
                 ],
               ),
             ),
-            InkWell(
-              onTap: () {
-                Navigator.pushNamed(context, "AgencyFeedback");
-              },
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 25, left: 20),
-                    child: CustomText(
-                        text: "Feedback",
-                        size: 20,
-                        weight: FontWeight.w400,
-                        color: myColor.textcolor),
-                  ),
-                ],
-              ),
-            ),
+            
             Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 25, left: 20),
-                    child: CustomText(
-                        text: "Contact us",
-                        size: 20,
-                        weight: FontWeight.w400,
-                        color: myColor.textcolor),
-                  ),
-                ],
-              ),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 25, left: 20),
+                  child: CustomText(
+                      text: "Contact us",
+                      size: 20,
+                      weight: FontWeight.w400,
+                      color: myColor.textcolor),
+                ),
+              ],
+            ),
             InkWell(
               onTap: () {
                 agencyDeleteAccount(context);

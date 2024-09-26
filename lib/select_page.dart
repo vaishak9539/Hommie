@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:hommie/view/widgets/cu_inkwell_button.dart';
-import 'package:hommie/view/admin/admin_login.dart';
-import 'package:hommie/view/agency/agencylogin/agency_login.dart';
-import 'package:hommie/view/user/login/slider1.dart';
+import 'package:hommie/widgets/cu_inkwell_button.dart';
+import 'package:hommie/admin/admin_view/admin_login.dart';
+import 'package:hommie/agency/view/agencylogin/agency_login.dart';
+import 'package:hommie/user/user_view/login/slider1.dart';
 
 class Select  extends StatelessWidget {
   const Select ({super.key});

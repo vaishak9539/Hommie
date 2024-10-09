@@ -123,6 +123,7 @@ class CuTextField extends StatelessWidget {
   final int maxLines;
   final Color? hintStyle;
   final IconButton? suffixIcon;
+  final bool readOnly;
 
   CuTextField({
     this.controller,
@@ -141,6 +142,7 @@ class CuTextField extends StatelessWidget {
     this.maxLines = 1,
     this.hintStyle,
     this.suffixIcon,
+    this.readOnly=false,
   });
 
   @override
@@ -148,6 +150,7 @@ class CuTextField extends StatelessWidget {
     return Padding(
       padding: outlinePadding,
       child: TextFormField(
+        readOnly: readOnly,
         keyboardType: keyboardType,
         controller: controller,
         maxLines: maxLines,

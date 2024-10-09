@@ -38,18 +38,18 @@ class AgencyRegModel {
       "AuthUid" : authUid
     };
   }
-  // factory AgencyRegModel.fromJson(Map<String,dynamic>json){
-  //   return AgencyRegModel(
-  //     name: json ["Name"],
-  //     contactNo: json ["ContactNo"],
-  //     state: json ["State"],
-  //     city: json ["City"],
-  //     licence: json ["Licence"],
-  //      email: json ["Email"],
-  //      password: json ["Password"],
-  //      terms: json ["Terms"],
-  //      createdAt: json ["createdAt"],
-  //      authUid: json ["AuthUid"]
-  //   );
-  // }
+  factory AgencyRegModel.fromJson(Map<String,dynamic>json){
+    return AgencyRegModel(
+      name: json ["Name"],
+      contactNo: json ["ContactNo"],
+      state: json ["State"],
+      city: json ["City"],
+      licence: json ["Licence"],
+       email: json ["Email"],
+       password: json ["Password"],
+       terms: json ["Terms"],
+       createdAt: json ["createdAt"],
+       authUid: json ["AuthUid"]
+    );
+  }
 }

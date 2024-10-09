@@ -1,11 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hommie/agency/controller/agencycopntroller.dart';
+import 'package:hommie/agency/controller/agency_controller.dart';
+import 'package:hommie/agency/controller/agencyprofilecontroller.dart';
 import 'package:hommie/firebase_options.dart';
 import 'package:hommie/select_page.dart';
 import 'package:hommie/admin/adminprovider/adminprovider.dart';
-import 'package:hommie/agency/agencyprovider/agency_provider_class.dart';
+import 'package:hommie/user/controller/auth_service.dart';
 import 'package:hommie/user/userprovider/user_provider_class.dart';
 import 'package:provider/provider.dart';
 
@@ -50,21 +51,14 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => SmoothIndicatorProvider(),
         ),
+        
         ChangeNotifierProvider(
           create: (context) => AgencyController(),
         ),
         ChangeNotifierProvider(
-          create: (context) => AgencyNavigationProvider(),
+          create: (context) => UserController(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => AgencyCityProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => AgencyPropertyTypProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => AgencyFurnishingProvider(),
-        ),
+        
         ChangeNotifierProvider(
           create: (context) => AdminObscureTextProvider(),
         ),
@@ -81,8 +75,7 @@ class MyApp extends StatelessWidget {
                 colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
                 useMaterial3: true,
               ),
-              home: Select()
-              );
+              home: Select());
         },
       ),
     );

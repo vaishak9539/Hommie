@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hommie/agency/controller/agency_controller.dart';
 import 'package:hommie/agency/view/agencyhome/agency_bottomnav.dart';
 import 'package:hommie/agency/view/agencylogin/agency_forgot_password.dart';
 import 'package:hommie/agency/view/agencylogin/agency_register.dart';
@@ -23,7 +25,6 @@ class _AgencyLoginState extends State<AgencyLogin> {
   bool agencySecureText = false;
   @override
   Widget build(BuildContext context) {
-  
     return Scaffold(
       backgroundColor: Colors.black,
       body: Container(
@@ -40,14 +41,14 @@ class _AgencyLoginState extends State<AgencyLogin> {
           ),
         ),
         child: SingleChildScrollView(
-          child:
-              Form(
-                key: formkey ,
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                            SizedBox(
+          child: Form(
+            key: formkey,
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              SizedBox(
                 height: 250.h,
-                            ),
-                            Padding(
+              ),
+              Padding(
                 padding: const EdgeInsets.only(left: 28),
                 child: CustomText(
                   text: "Welcome Back !",
@@ -56,8 +57,8 @@ class _AgencyLoginState extends State<AgencyLogin> {
                   color: Colors.white,
                   letterSpacing: 1.5,
                 ),
-                            ),
-                            Padding(
+              ),
+              Padding(
                 padding: const EdgeInsets.only(left: 33, top: 8),
                 child: CustomText(
                   text: "Login to your account",
@@ -66,50 +67,50 @@ class _AgencyLoginState extends State<AgencyLogin> {
                   color: Colors.white,
                   letterSpacing: 1.7,
                 ),
-                            ),
-                            Padding(
+              ),
+              Padding(
                 padding: const EdgeInsets.only(top: 20),
                 child: CustomTextField(
                   cursorColor: myColor.background,
                   keyboardType: TextInputType.emailAddress,
                   hintText: "Email",
                   controller: agencyEmailController,
-                   validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Please enter your email";
-                      }
-                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                        return "Please enter a valid email";
-                      } else {
-                        return null;
-                      }
-                    },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter your email";
+                    }
+                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                      return "Please enter a valid email";
+                    } else {
+                      return null;
+                    }
+                  },
                 ),
-                            ),
-                            Padding(
+              ),
+              Padding(
                 padding: const EdgeInsets.only(top: 20),
                 child: CustomTextField(
                   cursorColor: myColor.background,
                   hintText: "Password",
                   controller: agencyPasswordController,
-                   validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Please enter your Password";
-                      }
-                      if (!RegExp((r'[A-Z]')).hasMatch(value)) {
-                        return 'Uppercase letter is missing';
-                      }
-                      if (!RegExp((r'[a-z]')).hasMatch(value)) {
-                        return 'Lowercase letter is missing';
-                      }
-                      if (!RegExp((r'[0-9]')).hasMatch(value)) {
-                        return 'Digit is missing';
-                      }
-                      if (value.length < 8) {
-                        return "Password must have at least 8 characters";
-                      }
-                      return null;
-                    },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter your Password";
+                    }
+                    if (!RegExp((r'[A-Z]')).hasMatch(value)) {
+                      return 'Uppercase letter is missing';
+                    }
+                    if (!RegExp((r'[a-z]')).hasMatch(value)) {
+                      return 'Lowercase letter is missing';
+                    }
+                    if (!RegExp((r'[0-9]')).hasMatch(value)) {
+                      return 'Digit is missing';
+                    }
+                    if (value.length < 8) {
+                      return "Password must have at least 8 characters";
+                    }
+                    return null;
+                  },
                   obscureText: agencySecureText,
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -119,14 +120,14 @@ class _AgencyLoginState extends State<AgencyLogin> {
                       color: Colors.white,
                     ),
                     onPressed: () {
-                       setState(() {
-                         agencySecureText =! agencySecureText;
-                       });
+                      setState(() {
+                        agencySecureText = !agencySecureText;
+                      });
                     },
                   ),
                 ),
-                            ),
-                            Row(
+              ),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Padding(
@@ -145,28 +146,53 @@ class _AgencyLoginState extends State<AgencyLogin> {
                     ),
                   ),
                 ],
-                            ),
-                            SizedBox(height: 20.h),
-                            Row(
+              ),
+              SizedBox(height: 20.h),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CustomInkwellButton(
                     text: "Login",
                     onTap: () {
                       if (formkey.currentState!.validate()) {
-                        
+                        AgencyController().loginAgency(
+                          email: agencyEmailController.text.trim(),
+                          password: agencyPasswordController.text.trim(),
+                          onError: (error) {
+                             Fluttertoast.showToast(
+                              msg: "{$error}",
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.black54,
+                              textColor: Colors.white,
+                              fontSize: 16.0,
+                            );
+                          },
+                          onSuccess: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AgencyBottomNav(),
+                                ));
+                            Fluttertoast.showToast(
+                              msg: "Succesfully loggined",
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.black54,
+                              textColor: Colors.white,
+                              fontSize: 16.0,
+                            );
+                          },
+                        );
                       }
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //       builder: (context) => AgencyBottomNav(),
-                      //     ));
                     },
                   ),
                 ],
-                            ),
-                            SizedBox(height: 20.h),
-                            Row(
+              ),
+              SizedBox(height: 20.h),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CustomText(
@@ -191,11 +217,11 @@ class _AgencyLoginState extends State<AgencyLogin> {
                     ),
                   )
                 ],
-                            ),
-                            SizedBox(
+              ),
+              SizedBox(
                 height: 23.h,
-                            ),
-                            Row(
+              ),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Container(
@@ -214,9 +240,9 @@ class _AgencyLoginState extends State<AgencyLogin> {
                     color: Colors.white,
                   ),
                 ],
-                            ),
-                            SizedBox(height: 20.h),
-                            Row(
+              ),
+              SizedBox(height: 20.h),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   InkWell(
@@ -250,9 +276,9 @@ class _AgencyLoginState extends State<AgencyLogin> {
                     ),
                   ),
                 ],
-                            )
-                          ]),
-              ),
+              )
+            ]),
+          ),
         ),
       ),
     );

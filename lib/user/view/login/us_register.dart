@@ -1,56 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hommie/agency/controller/agency_controller.dart';
-import 'package:hommie/agency/model/agencymodel.dart';
-import 'package:hommie/agency/view/agencyhome/agency_bottomnav.dart';
-import 'package:hommie/agency/view/agencyhome/agencyaccount/agency_terms_conditions.dart';
 import 'package:hommie/model/utils/style/color.dart';
+import 'package:hommie/user/model/user_model.dart';
+import 'package:hommie/user/controller/auth_service.dart';
 import 'package:hommie/widgets/cu_inkwell_button.dart';
 import 'package:hommie/widgets/custom_text.dart';
 import 'package:hommie/widgets/custom_textfield.dart';
 import 'package:hommie/widgets/dropdown.dart';
+import 'package:hommie/user/view/home/user_account/user_terms_conditions.dart';
+import 'package:hommie/user/view/home/user_bottomnavigation.dart';
+import 'package:hommie/user/view/login/user_Login.dart';
+import 'package:hommie/user/userprovider/user_provider_class.dart';
 import 'package:provider/provider.dart';
 
-class AgencyRegister extends StatefulWidget {
-  const AgencyRegister({super.key});
+class UserRegister extends StatefulWidget {
+  const UserRegister({super.key});
 
   @override
-  State<AgencyRegister> createState() => _AgencyRegisterState();
+  State<UserRegister> createState() => _UserRegisterState();
 }
 
-class _AgencyRegisterState extends State<AgencyRegister> {
+class _UserRegisterState extends State<UserRegister> {
   final formkey = GlobalKey<FormState>();
 
-  final agencynameController = TextEditingController();
+  final userNameController = TextEditingController();
 
-  final agencycontactNoController = TextEditingController();
+  final userContactNoController = TextEditingController();
 
-  final agencyemailController = TextEditingController();
+  final userStateController = TextEditingController();
 
-  final agencypasswordController = TextEditingController();
+  final userCityController = TextEditingController();
 
-  final agencylicenceController = TextEditingController();
+  final userEmailController = TextEditingController();
+
+  final userPasswordController = TextEditingController();
 
   bool ischecked = false;
-
-  final List<String> agencystate = ["Kerala"];
-  String agencyStateValue = "";
-
-  final List<String> agencyCity = [
+  
+   final List<String> userstate = ["Kerala"];
+  String userStateValue = "";
+    final List<String> userCity = [
     "Kozhikode",
     "Wayanad",
     "Palakkad",
     "Malappuram",
     "Kannur",
   ];
-  String agencyCityValue = "";
-
- 
-
+  String userCityValue = "";
 
   @override
   Widget build(BuildContext context) {
-    final agencyController = Provider.of<AgencyController>(context);
+
+    final userController = Provider.of<UserController>(context);
+
+    // final registrationProvider = Provider.of<RegistrationProvider>(context);
+
+    // final userstateDropdownProvider =
+    //     Provider.of<UserStateDropdownProvider>(context);
+
+    // final userCityDropdownProvider =
+    //     Provider.of<UserCityDropdownProvider>(context);
 
     return Scaffold(
         backgroundColor: Colors.black,
@@ -72,7 +81,7 @@ class _AgencyRegisterState extends State<AgencyRegister> {
               key: formkey,
               child: Column(
                 children: [
-                  SizedBox(height: 50.h),
+                  SizedBox(height: 93.h),
                   CustomText(
                     text: "Register",
                     size: 30,
@@ -88,12 +97,12 @@ class _AgencyRegisterState extends State<AgencyRegister> {
                     letterSpacing: 2,
                   ),
                   SizedBox(
-                    height: ScreenUtil().setHeight(18),
+                    height: 20.h,
                   ),
                   CustomTextField(
                     hintText: "Name",
                     cursorColor: myColor.background,
-                    controller: agencynameController,
+                    controller: userNameController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return "Please enter your name";
@@ -102,13 +111,11 @@ class _AgencyRegisterState extends State<AgencyRegister> {
                       }
                     },
                   ),
-                  SizedBox(
-                    height: ScreenUtil().setHeight(18),
-                  ),
+                  SizedBox(height: 20.h),
                   CustomTextField(
                     cursorColor: myColor.background,
                     hintText: "Contact No",
-                    controller: agencycontactNoController,
+                    controller: userContactNoController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return "Please enter your number";
@@ -121,17 +128,17 @@ class _AgencyRegisterState extends State<AgencyRegister> {
                     },
                   ),
                   SizedBox(
-                    height: ScreenUtil().setHeight(18),
+                    height: 20.h,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       CuDropdown(
-                        items: agencystate,
+                       items: userstate,
                         onChanged: (String? value) {
                           setState(() {
-                            agencyStateValue = value!;
-                                print("Agency State is : $agencyStateValue");
+                            userStateValue = value!;
+                                print("Agency State is : $userStateValue");
 
                           });
                         },
@@ -145,48 +152,32 @@ class _AgencyRegisterState extends State<AgencyRegister> {
                         },
                       ),
                       CuDropdown(
-                        items: agencyCity,
+                       items: userCity,
                         onChanged: (String? value) {
                           setState(() {
-                            agencyCityValue = value!;
-                                print("Agency City is : $agencyCityValue");
+                            userCityValue = value!;
+                                print("Agency City is : $userCityValue");
 
                           });
                         },
                         hintText: "City",
                         backgroundColor: myColor.background,
-                        
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Please select a state";
                           }
                           return null;
                         },
-                      )
+                      ),
                     ],
                   ),
                   SizedBox(
-                    height: ScreenUtil().setHeight(18),
-                  ),
-                  CustomTextField(
-                    hintText: "Licence or aadhaar No",
-                    cursorColor: myColor.background,
-                    controller: agencylicenceController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Please enter your name";
-                      } else {
-                        return null;
-                      }
-                    },
-                  ),
-                  SizedBox(
-                    height: ScreenUtil().setHeight(18),
+                    height: 20.h,
                   ),
                   CustomTextField(
                     hintText: "Email",
                     cursorColor: myColor.background,
-                    controller: agencyemailController,
+                    controller: userEmailController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return "Please enter your email";
@@ -199,12 +190,12 @@ class _AgencyRegisterState extends State<AgencyRegister> {
                     },
                   ),
                   SizedBox(
-                    height: ScreenUtil().setHeight(18),
+                    height: 20.h,
                   ),
                   CustomTextField(
                     hintText: "Password",
                     cursorColor: myColor.background,
-                    controller: agencypasswordController,
+                    controller: userPasswordController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return "Please enter your Password";
@@ -250,8 +241,8 @@ class _AgencyRegisterState extends State<AgencyRegister> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      AgencyTermsConditions()));
+                                builder: (context) => UserTermsAndConditions(),
+                              ));
                         },
                         child: CustomText(
                             text: "Terms & conditions",
@@ -262,47 +253,69 @@ class _AgencyRegisterState extends State<AgencyRegister> {
                     ],
                   ),
                   SizedBox(
-                    height: ScreenUtil().setHeight(13),
+                    height: 15.h,
                   ),
                   CustomInkwellButton(
-                      onTap: () {
-                        if (formkey.currentState!.validate()) {
-                          if (ischecked == true) {
-
-
-                            final agency = AgencyRegModel(
-                              name: agencynameController.text,
-                              contactNo: agencycontactNoController.text,
-                              state: agencyStateValue,
-                              city: agencyCityValue,
-                              licence: agencylicenceController.text,
-                              email: agencyemailController.text,
-                              password: agencypasswordController.text,
-                              terms: ischecked,
-                              createdAt: DateTime.now(),
-                              
-                            );
-                            agencyController.registerAgency(
-                              agency: agency,
-                              onSuccess: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => AgencyBottomNav(),
-                                  ),
-                                );
-                              },
-                              onError: (e) {
-                                print(e);
-                              },
-                            );
-                          }
+                    onTap: () async {
+                      if (formkey.currentState!.validate()) {
+                        if (ischecked == true) {
+                          final user = UserRegModel(
+                            name: userNameController.text,
+                            contactNo: userContactNoController.text,
+                            state: userStateValue,
+                            city: userStateValue,
+                            email: userEmailController.text,
+                            password: userPasswordController.text,
+                            createdAt: DateTime.now(),
+                            terms: ischecked,
+                          );
+                          userController.registerUser(user: user, onError: (e) {
+                            print(e);
+                          },
+                           onSuccess: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => UserBottomNavigation(),));
+                          },);
+                        //   try {
+                        //     final userData =
+                        //         await _authService.registerUser(_userModel);
+                        //     if (userData != null) {
+                        //       Navigator.pushReplacement(
+                        //         context,
+                        //         MaterialPageRoute(
+                        //           builder: (context) => UserBottomNavigation(),
+                        //         ),
+                        //       );
+                        //     } else {
+                        //       // Show error message to user
+                        //       ScaffoldMessenger.of(context).showSnackBar(
+                        //         SnackBar(
+                        //             content: Text(
+                        //                 'Registration failed. Please try again.')),
+                        //       );
+                        //     }
+                        //   } catch (e) {
+                        //     // Handle any errors that occur during registration
+                        //     print('Error during registration: $e');
+                        //     ScaffoldMessenger.of(context).showSnackBar(
+                        //       SnackBar(
+                        //           content: Text(
+                        //               'An error occurred. Please try again.')),
+                        //     );
+                        //   }
+                        // } else {
+                        //   // Show message if terms and conditions are not accepted
+                        //   ScaffoldMessenger.of(context).showSnackBar(
+                        //     SnackBar(
+                        //         content: Text(
+                        //             'Please accept the terms and conditions.')),
+                        //   );
                         }
-                      
-                      },
-                      text: "Register"),
+                      }
+                    },
+                    text: "Register",
+                  ),
                   SizedBox(
-                    height: ScreenUtil().setHeight(15),
+                    height: 15.h,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -314,11 +327,11 @@ class _AgencyRegisterState extends State<AgencyRegister> {
                           color: Colors.white),
                       InkWell(
                           onTap: () {
-                            // Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //       builder: (context) => UserLogin(),
-                            //     ));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => UserLogin(),
+                                ));
                           },
                           child: Padding(
                             padding: const EdgeInsets.only(left: 6),
@@ -330,15 +343,13 @@ class _AgencyRegisterState extends State<AgencyRegister> {
                           ))
                     ],
                   ),
-                  SizedBox(
-                    height: ScreenUtil().setHeight(15),
-                  ),
+                  SizedBox(height: 15.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Container(
-                        height: ScreenUtil().setHeight(2),
-                        width: ScreenUtil().setWidth(100),
+                        height: 2.h,
+                        width: 100.w,
                         color: Colors.white,
                       ),
                       CustomText(
@@ -347,14 +358,14 @@ class _AgencyRegisterState extends State<AgencyRegister> {
                           weight: FontWeight.w500,
                           color: Colors.white),
                       Container(
-                        height: ScreenUtil().setHeight(2),
-                        width: ScreenUtil().setWidth(100),
+                        height: 2.h,
+                        width: 100.w,
                         color: Colors.white,
                       ),
                     ],
                   ),
                   SizedBox(
-                    height: ScreenUtil().setHeight(20),
+                    height: 25.h,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -362,8 +373,8 @@ class _AgencyRegisterState extends State<AgencyRegister> {
                       InkWell(
                         onTap: () {},
                         child: Container(
-                          height: ScreenUtil().setHeight(42),
-                          width: ScreenUtil().setWidth(250),
+                          height: 42.h,
+                          width: 250.w,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(31),
                               color: Color(0xffFFFFFF)),
@@ -374,8 +385,8 @@ class _AgencyRegisterState extends State<AgencyRegister> {
                                 padding: const EdgeInsets.only(left: 23),
                                 child: Image.asset(
                                   "assets/images/google.png",
-                                  height: 28,
-                                  width: 28,
+                                  height: 28.h,
+                                  width: 28.w,
                                 ),
                               ),
                               Padding(

@@ -5,22 +5,23 @@ import 'package:hommie/model/utils/style/img_path.dart';
 import 'package:hommie/widgets/appbar.dart';
 import 'package:hommie/widgets/cu_inkwell_button.dart';
 import 'package:hommie/widgets/custom_textfield.dart';
-import 'package:hommie/agency/view/agencyhome/agencyitemlist/agency_added_successfully.dart';
+import 'package:hommie/widgets/dropdown.dart';
 
-class AgencyAddLandDetails extends StatefulWidget {
-  final String typ;
-  AgencyAddLandDetails({super.key, required this.typ});
+class AgencyListUpdate extends StatefulWidget {
+  const AgencyListUpdate({super.key});
 
   @override
-  State<AgencyAddLandDetails> createState() => _AgencyAddLandDetailsState();
+  State<AgencyListUpdate> createState() => _AgencyListUpdateState();
 }
 
-class _AgencyAddLandDetailsState extends State<AgencyAddLandDetails> {
+class _AgencyListUpdateState extends State<AgencyListUpdate> {
+    List<String> furnishingList = ["Furnished", "Semi-Furnished", "Unfurnished"];
+  String furnishingTyp = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: myColor.background,
-      appBar: CustomAppBar(title: "Add Details"),
+      appBar: CustomAppBar(title: "Update Details"),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -38,30 +39,69 @@ class _AgencyAddLandDetailsState extends State<AgencyAddLandDetails> {
                 )),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: CuTextField(
-                readOnly: true,
-                hintText: widget.typ,
-              ),
-            ),
+           
             Padding(
               padding: const EdgeInsets.only(top: 10),
               child: CuTextField(
                 hintText: "Name",
-                
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 10),
               child: CuTextField(
-                hintText: "Sqft",
+                hintText: "Bedroom",
+                keyboardType: TextInputType.number,
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 10),
               child: CuTextField(
-                hintText: "location",
+                hintText: "Bathroom",
+                keyboardType: TextInputType.number,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: CuDropdown1(
+                      items: furnishingList,
+                      validator: (value) {
+                        if (furnishingTyp.isEmpty) {
+                          return "Please select furnishing type";
+                        }
+                        return null;
+                      },
+                      onChanged: (String? value) {
+                        setState(() {
+                          furnishingTyp = value!;
+                        });
+                      },
+                      hintText: "Furnishing",
+                    ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: CuTextField(
+                hintText: "SqFt",
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: CuTextField(
+                hintText: "Total Floors",
+                keyboardType: TextInputType.number,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: CuTextField(
+                hintText: "Car Parking",
+                keyboardType: TextInputType.number,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: CuTextField(
+                hintText: "Full Address",
               ),
             ),
             Padding(
@@ -79,9 +119,10 @@ class _AgencyAddLandDetailsState extends State<AgencyAddLandDetails> {
             Padding(
               padding: const EdgeInsets.only(top: 10),
               child: CuTextField(
-                hintText: "City/Pincode",
+                hintText: "City /Pincode",
               ),
             ),
+            
             Padding(
               padding: const EdgeInsets.only(top: 10),
               child: CuTextField(
@@ -91,13 +132,17 @@ class _AgencyAddLandDetailsState extends State<AgencyAddLandDetails> {
             Padding(
               padding: const EdgeInsets.only(top: 10),
               child: Padding(
-                padding: const EdgeInsets.only(left: 5, right: 5, top: 30),
+                padding: const EdgeInsets.only(left: 5,right: 5,top: 30),
                 child: CustomTextField(
+                  
                   hintText: "Description",
-                  hintStyle: TextStyle(backgroundColor: Colors.blue),
+                  hintStyle: TextStyle(
+                    backgroundColor: Colors.blue
+                  ),
                   borderColor: myColor.textcolor.withOpacity(0.5),
                   maxLines: 5,
                   textColor: myColor.textcolor,
+                  
                 ),
               ),
             ),
@@ -105,15 +150,11 @@ class _AgencyAddLandDetailsState extends State<AgencyAddLandDetails> {
               height: 30.h,
             ),
             CustomInkwellButton(
-                height: 40.h,
-                width: 300.w,
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => AgencyAddedSuccessfully()));
-                },
-                text: "Next"),
+              height: 40.h,
+              width: 300.w,
+              onTap: () {
+                    // Navigator.push(context, MaterialPageRoute(builder: (context) => AgencyAddedSuccessfully()));
+            }, text: "Next"),
             SizedBox(
               height: 30.h,
             ),

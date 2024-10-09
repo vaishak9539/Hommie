@@ -4,33 +4,32 @@ import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/model/utils/style/img_path.dart';
 import 'package:hommie/widgets/appbar.dart';
 import 'package:hommie/widgets/custom_text.dart';
-import 'package:hommie/agency/view/agencyhome/agency_notification.dart';
-import 'package:hommie/agency/view/agencyhome/agencyitemlist/agency_add_home_details.dart';
-import 'package:hommie/agency/view/agencyhome/agencyitemlist/agency_add_land_details.dart';
+import 'package:hommie/user/view/home/user_category/user_view_Apartment.dart';
+import 'package:hommie/user/view/home/user_category/user_view_home.dart';
+import 'package:hommie/user/view/home/user_category/user_view_lands.dart';
+import 'package:hommie/user/view/home/user_category/user_view_villa.dart';
+import 'package:hommie/user/view/home/user_notification.dart';
 
-class AgencyaddItem extends StatelessWidget {
-  const AgencyaddItem({super.key});
+class UserCategory extends StatelessWidget {
+  const UserCategory({super.key});
 
   @override
   Widget build(BuildContext context) {
-    List category = ["Home","Villa","Apartment","Land"];
     return Scaffold(
       backgroundColor: myColor.background,
       appBar: CustomAppBar(
+        automaticallyImplyLeading: false,
         title: "Category",
         actions: [
           Padding(
               padding: const EdgeInsets.only(right: 20),
               child: IconButton(
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => AgencyNotification()));
+                  Navigator.push(context,MaterialPageRoute(builder: (context) => UserNotification(),));
                 },
                 icon: Image.asset(
                   icons[1],
-                  width: 25.w,
+                  width: 25,
                 ),
               )),
         ],
@@ -46,15 +45,11 @@ class AgencyaddItem extends StatelessWidget {
               children: [
                 InkWell(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AgencyAddHomeDetails(typ : category[0]),
-                        ));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserViewHome(),));
                   },
                   child: SizedBox(
-                    width: 150.w,
-                    height: 140.h,
+                    width: 145.w,
+                    height: 130.h,
                     child: Card(
                       elevation: 10,
                       shadowColor: myColor.textcolor.withOpacity(0.4),
@@ -72,7 +67,7 @@ class AgencyaddItem extends StatelessWidget {
                           ),
                           Center(
                             child: CustomText(
-                              text: category[0],
+                              text: "Home",
                               size: 18,
                               weight: FontWeight.w500,
                               color: myColor.background,
@@ -85,15 +80,11 @@ class AgencyaddItem extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AgencyAddHomeDetails(typ : category[1]),
-                        ));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserViewVilla(),));
                   },
                   child: SizedBox(
-                    width: 150.w,
-                    height: 140.h,
+                    width: 145.w,
+                    height: 130.h,
                     child: Card(
                       elevation: 10,
                       shadowColor: myColor.textcolor.withOpacity(0.4),
@@ -111,7 +102,7 @@ class AgencyaddItem extends StatelessWidget {
                           ),
                           Center(
                             child: CustomText(
-                              text: category[1],
+                              text: "Villa",
                               size: 18,
                               weight: FontWeight.w500,
                               color: myColor.background,
@@ -132,15 +123,11 @@ class AgencyaddItem extends StatelessWidget {
               children: [
                 InkWell(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AgencyAddHomeDetails(typ : category[2]),
-                        ));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserViewApartment(),));
                   },
                   child: SizedBox(
-                    width: 150.w,
-                    height: 140.h,
+                    width: 145.w,
+                    height: 130.h,
                     child: Card(
                       elevation: 10,
                       shadowColor: myColor.textcolor.withOpacity(0.4),
@@ -171,15 +158,12 @@ class AgencyaddItem extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AgencyAddLandDetails(typ : category[3]),
-                        ));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => UserViewLands(),));
+
                   },
                   child: SizedBox(
-                    width: 150.w,
-                    height: 140.h,
+                    width: 145.w,
+                    height: 130.h,
                     child: Card(
                       elevation: 10,
                       shadowColor: myColor.textcolor.withOpacity(0.4),

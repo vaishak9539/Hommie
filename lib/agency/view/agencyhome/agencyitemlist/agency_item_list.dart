@@ -1,139 +1,180 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hommie/agency/view/agencyhome/agencyitemlist/agency_add_item.dart';
+import 'package:hommie/agency/view/agencyhome/agencyitemlist/agency_item_view.dart';
+import 'package:hommie/agency/view/agencyhome/agencyitemlist/agency_list_update.dart';
 import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/model/utils/style/img_path.dart';
-import 'package:hommie/agency/view/agencyhome/agencyitemlist/agency_chat_list.dart';
 import 'package:hommie/widgets/appbar.dart';
-import 'package:hommie/widgets/custom_card.dart';
 import 'package:hommie/widgets/custom_text.dart';
-import 'package:hommie/agency/view/agencyhome/agency_notification.dart';
-import 'package:hommie/agency/view/agencyhome/agencyitemlist/agency_add_item.dart';
 
-class AgencyItemList extends StatelessWidget {
+class AgencyItemList extends StatefulWidget {
   const AgencyItemList({super.key});
+
+  @override
+  State<AgencyItemList> createState() => _AgencyItemListState();
+}
+
+class _AgencyItemListState extends State<AgencyItemList> {
+  void itemsdelete(String documentId) {
+    FirebaseFirestore.instance
+        .collection("items")
+        .doc(documentId)
+        .delete()
+        .then((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Item deleted successfully"),
+        ),
+      );
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to delete item: $error"),
+        ),
+      );
+    });
+  }
+
+  void itemUpdate(){
+    
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: myColor.background,
       appBar: CustomAppBar(
-        automaticallyImplyLeading: false,
         title: "Home",
-        actions: [
-          Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: IconButton(
-                onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => AgencyNotification()));
-                },
-                icon: Image.asset(
-                  icons[1],
-                  width: 25,
-                ),
-              )),
-        ],
+        automaticallyImplyLeading: true,
       ),
-      body: ListView.builder(
-        itemCount: 1,
-        itemBuilder: (context, index) {
-        return Padding(
-        padding: const EdgeInsets.only(left: 10, top: 20,right: 10),
-        child: CustomCard(
-          color: myColor.background,
-          elevation: 2,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                height: 85.h,
-                width: 100.w,
-                child: ClipRRect(
-                    borderRadius:
-                        BorderRadius.horizontal(left: Radius.circular(10)),
-                    child: Image.asset(
-                      backgroundimage[2],
-                      fit: BoxFit.cover,
-                    )),
-              ),
-              Container(
-                height: 85.h,
-                decoration: BoxDecoration(
-                  borderRadius:
-                      BorderRadius.horizontal(right: Radius.circular(10)),
-                ),
-                child: Row(
-                  children: [
-                    Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            top: 20,
-                          ),
-                          child: Row(
-                            children: [
-                              CustomText(
-                                  text: "Hilite villa ",
-                                  size: 13,
-                                  weight: FontWeight.w500,
-                                  color: myColor.textcolor)
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10, top: 5),
-                          child: Row(
-                            children: [
-                              CustomText(
-                                  text: "nova  auditorium,\npalazhi",
-                                  size: 10,
-                                  weight: FontWeight.w400,
-                                  color: myColor.textcolor),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 30),
-                      child: Row(
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => AgencyChatList(),));
-                            },
-                            icon: Icon(Icons.chat_bubble_outline_rounded)
-                          ),
-                          
-                          PopupMenuButton(
-                            color: myColor.background,
-                            itemBuilder: (context) {
-                            
-                            return [
-                              PopupMenuItem(child: Text("Edit")),
-                              PopupMenuItem(child: Text("Delete"))
-                            ];
-                          },)
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ],
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('items').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Center(child: Text("No items found"));
+          }
+
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              var itemData = snapshot.data!.docs[index];
+              var documentId = itemData.id; 
+              var name = itemData["Name"] ?? "No Name"; 
+              var roadName = itemData["RoadName"] ?? "Unknown road";
+
+              
+              List<dynamic> imageUrls = itemData["imageUrls"] ?? [];
+              var imageUrl = imageUrls.isNotEmpty
+                  ? imageUrls[0] 
+                  : backgroundimage[1]; 
+
+              
+              return Padding(
+  padding: const EdgeInsets.all(8.0),
+  child: Card(
+    child: Row(
+      children: [
+        // Image Section
+        SizedBox(
+          height: 85,
+          width: 100,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: imageUrl.startsWith('http')
+                ? Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                  )
+                : Image.asset(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                  ),
           ),
         ),
-      );
-      },),
-      floatingActionButton: Padding(
+        // ListTile Section
+        Expanded(
+          child: ListTile(
+            onTap: () {
+              // Navigate to view item details
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AgencyItemView(
+                    itemData: itemData.data() as Map<String, dynamic>,
+                    documentId: documentId,
+                  ),
+                ),
+              );
+            },
+            title: CustomText(
+              text: name,
+              size: 16,
+              weight: FontWeight.w500,
+              color: myColor.textcolor,
+            ),
+            subtitle: CustomText(
+              text: roadName,
+              size: 12,
+              weight: FontWeight.w400,
+              color: myColor.textcolor,
+            ),
+            trailing: PopupMenuButton<String>(
+              color: myColor.background,
+              onSelected: (value) {
+                if (value == 'Delete') {
+                  itemsdelete(documentId);
+                }
+                if (value == "Edit") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AgencyListUpdate(),
+                    ),
+                  );
+                }
+              },
+              itemBuilder: (context) {
+                return [
+                  PopupMenuItem(
+                    value: 'Edit',
+                    child: Text("Edit"),
+                  ),
+                  PopupMenuItem(
+                    value: 'Delete',
+                    child: Text("Delete"),
+                  ),
+                ];
+              },
+            ),
+          ),
+        ),
+      ],
+    ),
+  ),
+);
+
+            },
+          );
+        },
+      ),
+       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 15),
         child: FloatingActionButton(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           backgroundColor: myColor.maincolor,
           onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => AgencyaddItem()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => AgencyaddItem()));
           },
           child: Icon(
             Icons.add,

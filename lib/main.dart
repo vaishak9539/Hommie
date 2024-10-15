@@ -1,12 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hommie/agency/controller/agency_controller.dart';
-import 'package:hommie/agency/controller/agencyprofilecontroller.dart';
+
 import 'package:hommie/firebase_options.dart';
 import 'package:hommie/select_page.dart';
 import 'package:hommie/admin/adminprovider/adminprovider.dart';
-import 'package:hommie/user/controller/auth_service.dart';
 import 'package:hommie/user/userprovider/user_provider_class.dart';
 import 'package:provider/provider.dart';
 
@@ -33,31 +31,27 @@ class MyApp extends StatelessWidget {
         designSize: Size(width, height));
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (context) => RegistrationProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => ObscuretextProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => UserStateDropdownProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => UserCityDropdownProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => UserNavigationProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => SmoothIndicatorProvider(),
-        ),
+        // ChangeNotifierProvider(
+        //   create: (context) => RegistrationProvider(),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (context) => ObscuretextProvider(),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (context) => UserStateDropdownProvider(),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (context) => UserCityDropdownProvider(),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (context) => UserNavigationProvider(),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (context) => SmoothIndicatorProvider(),
+        // ),
         
-        ChangeNotifierProvider(
-          create: (context) => AgencyController(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => UserController(),
-        ),
+       
+   
         
         ChangeNotifierProvider(
           create: (context) => AdminObscureTextProvider(),

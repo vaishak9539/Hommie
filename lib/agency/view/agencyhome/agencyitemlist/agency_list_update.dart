@@ -8,7 +8,7 @@ import 'package:hommie/widgets/custom_textfield.dart';
 import 'package:hommie/widgets/dropdown.dart';
 
 class AgencyListUpdate extends StatefulWidget {
-  const AgencyListUpdate({super.key});
+  const AgencyListUpdate({super.key, required String documentId});
 
   @override
   State<AgencyListUpdate> createState() => _AgencyListUpdateState();

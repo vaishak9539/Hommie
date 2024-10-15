@@ -1,8 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hommie/model/utils/style/color.dart';
-import 'package:hommie/user/model/user_model.dart';
-import 'package:hommie/user/controller/auth_service.dart';
 import 'package:hommie/widgets/cu_inkwell_button.dart';
 import 'package:hommie/widgets/custom_text.dart';
 import 'package:hommie/widgets/custom_textfield.dart';
@@ -36,10 +37,10 @@ class _UserRegisterState extends State<UserRegister> {
   final userPasswordController = TextEditingController();
 
   bool ischecked = false;
-  
-   final List<String> userstate = ["Kerala"];
+
+  final List<String> userstate = ["Kerala"];
   String userStateValue = "";
-    final List<String> userCity = [
+  final List<String> userCity = [
     "Kozhikode",
     "Wayanad",
     "Palakkad",
@@ -48,18 +49,62 @@ class _UserRegisterState extends State<UserRegister> {
   ];
   String userCityValue = "";
 
+   Future<void> validationCheckingUser() async {
+    if (formkey.currentState!.validate()) {
+      if (ischecked == true) {
+        try {
+          UserCredential userCredential =
+              await FirebaseAuth.instance.createUserWithEmailAndPassword(
+            email: userEmailController.text,
+            password: userPasswordController.text,
+          );
+          String userAuthenticationUid = userCredential.user!.uid;
+
+          // Save to Firestore
+          await FirebaseFirestore.instance
+              .collection("Users") // Updated collection name
+              .doc(userAuthenticationUid)
+              .set({
+            "Name": userNameController.text,
+            "ContactNo": userContactNoController.text,
+            "State": userStateValue,
+            "City": userCityValue,
+            "Email": userEmailController.text,
+            "Password": userPasswordController.text,
+            "Terms": ischecked,
+            "AuthUid": userAuthenticationUid,
+            'CreatedAt': DateTime.now(),
+          });
+
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UserBottomNavigation(),
+              ));
+
+          // Reset form state after successful registration
+          formkey.currentState!.reset();
+          ischecked = false;
+        } on FirebaseAuthException catch (e) {
+          String errorMessage = "Registration failed. ${e.message}";
+
+          if (e.code == 'email-already-in-use') {
+            errorMessage = "Email is already in use. Please use a different email";
+          }
+
+          Fluttertoast.showToast(msg: errorMessage);
+        } catch (e) {
+          print("Unexpected error during registration: $e");
+          Fluttertoast.showToast(msg: "Unexpected error during registration");
+        }
+      } else {
+        Fluttertoast.showToast(msg: "Please agree to the terms and conditions");
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-
-    final userController = Provider.of<UserController>(context);
-
-    // final registrationProvider = Provider.of<RegistrationProvider>(context);
-
-    // final userstateDropdownProvider =
-    //     Provider.of<UserStateDropdownProvider>(context);
-
-    // final userCityDropdownProvider =
-    //     Provider.of<UserCityDropdownProvider>(context);
 
     return Scaffold(
         backgroundColor: Colors.black,
@@ -134,12 +179,11 @@ class _UserRegisterState extends State<UserRegister> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       CuDropdown(
-                       items: userstate,
+                        items: userstate,
                         onChanged: (String? value) {
                           setState(() {
                             userStateValue = value!;
-                                print("Agency State is : $userStateValue");
-
+                            print("Agency State is : $userStateValue");
                           });
                         },
                         hintText: "State",
@@ -152,12 +196,11 @@ class _UserRegisterState extends State<UserRegister> {
                         },
                       ),
                       CuDropdown(
-                       items: userCity,
+                        items: userCity,
                         onChanged: (String? value) {
                           setState(() {
                             userCityValue = value!;
-                                print("Agency City is : $userCityValue");
-
+                            print("Agency City is : $userCityValue");
                           });
                         },
                         hintText: "City",
@@ -224,8 +267,7 @@ class _UserRegisterState extends State<UserRegister> {
                           onChanged: (bool? value) {
                             setState(() {
                               ischecked = value!;
-                                  print("Agency Checkbox value is : $ischecked");
-
+                              print("Agency Checkbox value is : $ischecked");
                             });
                           },
                           activeColor: Color(0xff3FA2F6),
@@ -257,60 +299,7 @@ class _UserRegisterState extends State<UserRegister> {
                   ),
                   CustomInkwellButton(
                     onTap: () async {
-                      if (formkey.currentState!.validate()) {
-                        if (ischecked == true) {
-                          final user = UserRegModel(
-                            name: userNameController.text,
-                            contactNo: userContactNoController.text,
-                            state: userStateValue,
-                            city: userStateValue,
-                            email: userEmailController.text,
-                            password: userPasswordController.text,
-                            createdAt: DateTime.now(),
-                            terms: ischecked,
-                          );
-                          userController.registerUser(user: user, onError: (e) {
-                            print(e);
-                          },
-                           onSuccess: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => UserBottomNavigation(),));
-                          },);
-                        //   try {
-                        //     final userData =
-                        //         await _authService.registerUser(_userModel);
-                        //     if (userData != null) {
-                        //       Navigator.pushReplacement(
-                        //         context,
-                        //         MaterialPageRoute(
-                        //           builder: (context) => UserBottomNavigation(),
-                        //         ),
-                        //       );
-                        //     } else {
-                        //       // Show error message to user
-                        //       ScaffoldMessenger.of(context).showSnackBar(
-                        //         SnackBar(
-                        //             content: Text(
-                        //                 'Registration failed. Please try again.')),
-                        //       );
-                        //     }
-                        //   } catch (e) {
-                        //     // Handle any errors that occur during registration
-                        //     print('Error during registration: $e');
-                        //     ScaffoldMessenger.of(context).showSnackBar(
-                        //       SnackBar(
-                        //           content: Text(
-                        //               'An error occurred. Please try again.')),
-                        //     );
-                        //   }
-                        // } else {
-                        //   // Show message if terms and conditions are not accepted
-                        //   ScaffoldMessenger.of(context).showSnackBar(
-                        //     SnackBar(
-                        //         content: Text(
-                        //             'Please accept the terms and conditions.')),
-                        //   );
-                        }
-                      }
+                     validationCheckingUser();
                     },
                     text: "Register",
                   ),
@@ -379,7 +368,6 @@ class _UserRegisterState extends State<UserRegister> {
                               borderRadius: BorderRadius.circular(31),
                               color: Color(0xffFFFFFF)),
                           child: Row(
-                            // mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(left: 23),

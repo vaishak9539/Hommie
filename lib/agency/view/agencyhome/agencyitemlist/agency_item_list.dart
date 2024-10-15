@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hommie/agency/view/agencyhome/agencyitemlist/agency_add_item.dart';
 import 'package:hommie/agency/view/agencyhome/agencyitemlist/agency_item_view.dart';
@@ -7,6 +8,7 @@ import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/model/utils/style/img_path.dart';
 import 'package:hommie/widgets/appbar.dart';
 import 'package:hommie/widgets/custom_text.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AgencyItemList extends StatefulWidget {
   const AgencyItemList({super.key});
@@ -16,28 +18,23 @@ class AgencyItemList extends StatefulWidget {
 }
 
 class _AgencyItemListState extends State<AgencyItemList> {
-  void itemsdelete(String documentId) {
-    FirebaseFirestore.instance
-        .collection("items")
-        .doc(documentId)
-        .delete()
-        .then((_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Item deleted successfully"),
-        ),
-      );
-    }).catchError((error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Failed to delete item: $error"),
-        ),
-      );
+  String? userId;
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserId().then((_) {
+      setState(() {}); // Trigger a rebuild with the updated userId
     });
   }
 
-  void itemUpdate(){
-    
+  Future<void> _getUserId() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        userId = user.uid;
+      });
+    }
   }
 
   @override
@@ -49,132 +46,133 @@ class _AgencyItemListState extends State<AgencyItemList> {
         automaticallyImplyLeading: true,
       ),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('items').snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('items')
+            .doc(userId)
+            .collection("item_List")
+            .snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-
           if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(child: Text("No items found"));
+            return const Center(child: Text("No items found"));
           }
+        
+            return ListView.builder(
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (context, index) {
+                var itemData = snapshot.data!.docs[index];
+                var documentId = itemData.id;
+                var name = itemData["name"] ?? "No Name";
+                var roadName = itemData["roadName"] ?? "Unknown road";
 
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-              var itemData = snapshot.data!.docs[index];
-              var documentId = itemData.id; 
-              var name = itemData["Name"] ?? "No Name"; 
-              var roadName = itemData["RoadName"] ?? "Unknown road";
+                List<dynamic> imageUrls = itemData["imageUrls"] ?? [];
+                var imageUrl =
+                    imageUrls.isNotEmpty ? imageUrls[0] : backgroundimage[1];
 
-              
-              List<dynamic> imageUrls = itemData["imageUrls"] ?? [];
-              var imageUrl = imageUrls.isNotEmpty
-                  ? imageUrls[0] 
-                  : backgroundimage[1]; 
-
-              
-              return Padding(
-  padding: const EdgeInsets.all(8.0),
-  child: Card(
-    child: Row(
-      children: [
-        // Image Section
-        SizedBox(
-          height: 85,
-          width: 100,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: imageUrl.startsWith('http')
-                ? Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                  )
-                : Image.asset(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                  ),
-          ),
-        ),
-        // ListTile Section
-        Expanded(
-          child: ListTile(
-            onTap: () {
-              // Navigate to view item details
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AgencyItemView(
-                    itemData: itemData.data() as Map<String, dynamic>,
-                    documentId: documentId,
-                  ),
-                ),
-              );
-            },
-            title: CustomText(
-              text: name,
-              size: 16,
-              weight: FontWeight.w500,
-              color: myColor.textcolor,
-            ),
-            subtitle: CustomText(
-              text: roadName,
-              size: 12,
-              weight: FontWeight.w400,
-              color: myColor.textcolor,
-            ),
-            trailing: PopupMenuButton<String>(
-              color: myColor.background,
-              onSelected: (value) {
-                if (value == 'Delete') {
-                  itemsdelete(documentId);
-                }
-                if (value == "Edit") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AgencyListUpdate(),
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Card(
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          height: 85,
+                          width: 100,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: imageUrl.startsWith('http')
+                                ? Image.network(
+                                    imageUrl,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.asset(
+                                    imageUrl,
+                                    fit: BoxFit.cover,
+                                  ),
+                          ),
+                        ),
+                        Expanded(
+                          child: ListTile(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AgencyItemView(
+                                    itemData:
+                                        itemData.data() as Map<String, dynamic>,
+                                    documentId: documentId,
+                                  ),
+                                ),
+                              );
+                            },
+                            title: CustomText(
+                              text: name,
+                              size: 16,
+                              weight: FontWeight.w500,
+                              color: myColor.textcolor,
+                            ),
+                            subtitle: CustomText(
+                              text: roadName,
+                              size: 12,
+                              weight: FontWeight.w400,
+                              color: myColor.textcolor,
+                            ),
+                            trailing: PopupMenuButton<String>(
+                              color: myColor.background,
+                              onSelected: (value) {
+                                if (value == 'Delete') {
+                                  // deleteItem(
+                                  //     documentId);
+                                }
+                                if (value == "Edit") {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AgencyListUpdate(
+                                        documentId: documentId,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              itemBuilder: (context) {
+                                return [
+                                  const PopupMenuItem(
+                                    value: 'Edit',
+                                    child: Text("Edit"),
+                                  ),
+                                  const PopupMenuItem(
+                                    value: 'Delete',
+                                    child: Text("Delete"),
+                                  ),
+                                ];
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  );
-                }
-              },
-              itemBuilder: (context) {
-                return [
-                  PopupMenuItem(
-                    value: 'Edit',
-                    child: Text("Edit"),
                   ),
-                  PopupMenuItem(
-                    value: 'Delete',
-                    child: Text("Delete"),
-                  ),
-                ];
+                );
               },
-            ),
-          ),
-        ),
-      ],
-    ),
-  ),
-);
-
-            },
-          );
+            );
+          
         },
       ),
-       floatingActionButton: Padding(
+      floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 15),
         child: FloatingActionButton(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
           backgroundColor: myColor.maincolor,
           onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => AgencyaddItem()));
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AgencyaddItem()),
+            );
           },
           child: Icon(
             Icons.add,

@@ -9,7 +9,7 @@ import 'package:hommie/agency/view/agencyhome/agencyitemlist/agency_added_succes
 
 class AgencyAddLandDetails extends StatefulWidget {
   final String typ;
-  AgencyAddLandDetails({super.key, required this.typ});
+  AgencyAddLandDetails({super.key, required this.typ,});
 
   @override
   State<AgencyAddLandDetails> createState() => _AgencyAddLandDetailsState();

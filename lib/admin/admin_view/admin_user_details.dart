@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/color.dart';
@@ -6,11 +7,19 @@ import 'package:hommie/widgets/appbar.dart';
 import 'package:hommie/widgets/custom_card.dart';
 import 'package:hommie/widgets/custom_text.dart';
 
-class AdminUserDetails extends StatelessWidget {
-  const AdminUserDetails({super.key});
+class AdminUserDetails extends StatefulWidget {
+  final userdata;
+  const AdminUserDetails({super.key, required this.userdata, });
 
   @override
+  State<AdminUserDetails> createState() => _AdminUserDetailsState();
+}
+
+class _AdminUserDetailsState extends State<AdminUserDetails> {
+  
+  @override
   Widget build(BuildContext context) {
+    var userImageUrl = widget.userdata["ImageUrl"] ?? "N/A";
     return Scaffold(
       backgroundColor: myColor.background,
       appBar: CustomAppBar(title: "User Details"),
@@ -30,9 +39,14 @@ class AdminUserDetails extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 35, bottom: 20),
                         child: CircleAvatar(
                             radius: 45,
-                            backgroundImage: AssetImage(
-                              icons[5],
-                            )),
+                          backgroundImage:
+                      (userImageUrl != null && userImageUrl!.isNotEmpty)
+                          ? NetworkImage(userImageUrl!) as ImageProvider
+                          : null,
+                  child: (userImageUrl == null || userImageUrl!.isEmpty)
+                      ? const Icon(Icons.person, size: 50)
+                      : null,
+                            ),
                       ),
                       Row(
                         children: [
@@ -44,7 +58,7 @@ class AdminUserDetails extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 30),
                                   child: CustomText(
-                                      text: "agency Name",
+                                      text: "Name",
                                       size: 15,
                                       weight: FontWeight.w400,
                                       color: myColor.textcolor),
@@ -139,7 +153,7 @@ class AdminUserDetails extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 30),
                                   child: CustomText(
-                                      text: "agency",
+                                      text:  widget.userdata["Name"] ?? "N/A",
                                       size: 15,
                                       weight: FontWeight.w400,
                                       color: myColor.textcolor),
@@ -147,7 +161,7 @@ class AdminUserDetails extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 30),
                                   child: CustomText(
-                                      text: "125478956",
+                                      text:  widget.userdata["ContactNo"] ?? "N/A",
                                       size: 15,
                                       weight: FontWeight.w400,
                                       color: myColor.textcolor),
@@ -155,7 +169,7 @@ class AdminUserDetails extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 30),
                                   child: CustomText(
-                                      text: "age@gmail.com",
+                                      text:  widget.userdata["Email"] ?? "N/A",
                                       size: 15,
                                       weight: FontWeight.w400,
                                       color: myColor.textcolor),
@@ -163,7 +177,7 @@ class AdminUserDetails extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 30),
                                   child: CustomText(
-                                      text: "35,00000",
+                                      text:  widget.userdata["State"] ?? "N/A",
                                       size: 15,
                                       weight: FontWeight.w400,
                                       color: myColor.textcolor),
@@ -171,7 +185,7 @@ class AdminUserDetails extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 30),
                                   child: CustomText(
-                                      text: "35,00000",
+                                      text:  widget.userdata["City"] ?? "N/A",
                                       size: 15,
                                       weight: FontWeight.w400,
                                       color: myColor.textcolor),
@@ -192,6 +206,7 @@ class AdminUserDetails extends StatelessWidget {
            
           ],
         ),
+        
       ),
     );
   }

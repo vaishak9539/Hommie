@@ -7,28 +7,38 @@ import 'package:hommie/admin/adminprovider/adminprovider.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
-class AdminBottomnav extends StatelessWidget {
+class AdminBottomnav extends StatefulWidget {
   const AdminBottomnav({super.key});
 
   @override
+  State<AdminBottomnav> createState() => _AdminBottomnavState();
+}
+
+class _AdminBottomnavState extends State<AdminBottomnav> {
+  var navigationIndex = 0;
+  @override
   Widget build(BuildContext context) {
-    List pages = [AdminAgencyRequest(), AdminUsers(),AdminBadge()];
-    final adminNavigationProvider = Provider.of<AdminNavigationProvider>(context);
+    List pages = [AdminAgencyRequest(), AdminUsers(),
+    // AdminBadge()
+    ];
+    // final adminNavigationProvider = Provider.of<AdminNavigationProvider>(context);
     return Scaffold(
       
       bottomNavigationBar: NavigationBar(
         height: 60,
         elevation: 0,
-        selectedIndex: adminNavigationProvider.navigationIndex,
+        selectedIndex: navigationIndex,
         onDestinationSelected: (int index) {
-          adminNavigationProvider.adminNavigationCurrentIndex(index);
+          setState(() {
+            navigationIndex=index;
+          });
         },
        backgroundColor: Colors.grey[200],
         indicatorColor: Colors.teal[300],
         animationDuration: Durations.short4,
         destinations: [
           NavigationDestination(
-              icon: adminNavigationProvider.navigationIndex == 0
+              icon: navigationIndex == 0
                   ? Icon(
                       IconlyBold.home,
                       size: 23,
@@ -36,19 +46,19 @@ class AdminBottomnav extends StatelessWidget {
                   : Icon(IconlyLight.home),
               label: "Home"),
           NavigationDestination(
-              icon: adminNavigationProvider.navigationIndex == 1
+              icon: navigationIndex == 1
                   ? Icon(IconlyBold.profile, size: 23)
                   : Icon(IconlyLight.profile, size: 23),
               label: "User"),
-          NavigationDestination(
-              icon: adminNavigationProvider.navigationIndex == 2
-                  ? Image.asset(icons[2], width: 23)
-                  : Image.asset(icons[3], width: 23),
-              label: "Request"),
+          // NavigationDestination(
+          //     icon: adminNavigationProvider.navigationIndex == 2
+          //         ? Image.asset(icons[2], width: 23)
+          //         : Image.asset(icons[3], width: 23),
+              // label: "Request"),
          
         ],
       ),
-      body: pages[adminNavigationProvider.navigationIndex],
+      body: pages[navigationIndex],
     );
   }
 }

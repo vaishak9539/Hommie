@@ -1,7 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:hommie/agency/controller/agency_controller.dart';
 import 'package:hommie/agency/view/agencyhome/agency_bottomnav.dart';
 import 'package:hommie/agency/view/agencylogin/agency_forgot_password.dart';
 import 'package:hommie/agency/view/agencylogin/agency_register.dart';
@@ -10,6 +10,7 @@ import 'package:hommie/widgets/cu_inkwell_button.dart';
 import 'package:hommie/widgets/cu_text_button.dart';
 import 'package:hommie/widgets/custom_text.dart';
 import 'package:hommie/widgets/custom_textfield.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AgencyLogin extends StatefulWidget {
   const AgencyLogin({super.key});
@@ -23,6 +24,70 @@ class _AgencyLoginState extends State<AgencyLogin> {
   final agencyPasswordController = TextEditingController();
   final agencyEmailController = TextEditingController();
   bool agencySecureText = false;
+
+  Future<void> agencySignWithEmailAndPassword() async {
+    if (formkey.currentState!.validate()) {
+      String agencyEmail = agencyEmailController.text.trim();
+      String agencyPassword = agencyPasswordController.text.trim();
+
+      var querySnapshot = await FirebaseFirestore.instance
+          .collection("Agencies")
+          .where("Email", isEqualTo: agencyEmail)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var agencyData = querySnapshot.docs.first.data();
+        var passwordFromDB = agencyData['Password'];
+        if (passwordFromDB != null && passwordFromDB == agencyPassword) {
+          var agencyUid = agencyData["AuthUid"];
+          if (agencyUid != null) {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.setString("agencyUid", agencyUid);
+          }
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          String? agId = prefs.getString("agencyUid");
+          print("Shared Preference Student ID: $agId");
+
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return AgencyBottomNav();
+          }));
+          Fluttertoast.showToast(
+            msg: 'Succesfully loggined',
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.black54,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+        } else {
+          print('Incorrect password');
+          Fluttertoast.showToast(
+            msg: 'Incorrect Password',
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.black54,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+        }
+      } else {
+        print('User not found');
+        Fluttertoast.showToast(
+          msg: 'User not found',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black54,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -154,39 +219,7 @@ class _AgencyLoginState extends State<AgencyLogin> {
                   CustomInkwellButton(
                     text: "Login",
                     onTap: () {
-                      if (formkey.currentState!.validate()) {
-                        AgencyController().loginAgency(
-                          email: agencyEmailController.text.trim(),
-                          password: agencyPasswordController.text.trim(),
-                          onError: (error) {
-                             Fluttertoast.showToast(
-                              msg: "{$error}",
-                              toastLength: Toast.LENGTH_LONG,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                              backgroundColor: Colors.black54,
-                              textColor: Colors.white,
-                              fontSize: 16.0,
-                            );
-                          },
-                          onSuccess: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => AgencyBottomNav(),
-                                ));
-                            Fluttertoast.showToast(
-                              msg: "Succesfully loggined",
-                              toastLength: Toast.LENGTH_LONG,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                              backgroundColor: Colors.black54,
-                              textColor: Colors.white,
-                              fontSize: 16.0,
-                            );
-                          },
-                        );
-                      }
+                      agencySignWithEmailAndPassword();
                     },
                   ),
                 ],

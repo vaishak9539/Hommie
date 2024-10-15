@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/alert.dart';
@@ -9,33 +10,77 @@ import 'package:hommie/user/view/home/user_account/user_history.dart';
 import 'package:hommie/user/view/home/user_account/user_profile.dart';
 import 'package:hommie/user/view/home/user_account/user_terms_conditions.dart';
 import 'package:hommie/user/view/home/user_notification.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class UserAccount extends StatelessWidget {
+class UserAccount extends StatefulWidget {
   const UserAccount({super.key});
 
-  Future<void> _launchEmail(String email, BuildContext context) async {
-  final Uri emailLaunchUri = Uri(
-    scheme: 'mailto',
-    path: email,
-  );
-  try {
-    if (!await launchUrl(emailLaunchUri, mode: LaunchMode.externalApplication)) {
-      throw Exception('Could not launch $emailLaunchUri');
+  @override
+  State<UserAccount> createState() => _UserAccountState();
+}
+
+class _UserAccountState extends State<UserAccount> {
+  String? userId;
+  var userName;
+  String? userEmail;
+  String? userImageUrl;
+
+  Future<void> _getuserDetails() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      setState(() {
+        userId = prefs.getString("userUid");
+      });
+
+      if (userId != null) {
+        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+            .collection("Users")
+            .doc(userId)
+            .get();
+
+        if (userSnapshot.exists) {
+          setState(() {
+            userName = userSnapshot["Name"];
+            userEmail = userSnapshot["Email"];
+            userImageUrl = userSnapshot["ImageUrl"];
+            print("object : $userName");
+            print("object : $userEmail");
+          });
+        }
+      }
+    } catch (e) {
+      print("Error fetching agency details: $e");
     }
-  } catch (e) {
-    print('Error launching email: $e');
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Could not open email client')),
+  }
+
+  Future<void> _launchEmail(String email, BuildContext context) async {
+    final Uri emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: email,
     );
-  }}
+    try {
+      if (!await launchUrl(emailLaunchUri,
+          mode: LaunchMode.externalApplication)) {
+        throw Exception('Could not launch $emailLaunchUri');
+      }
+    } catch (e) {
+      print('Error launching email: $e');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not open email client')),
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getuserDetails();
+  }
 
   @override
   Widget build(BuildContext context) {
-   
-    
-
     return Scaffold(
       backgroundColor: myColor.background,
       appBar: CustomAppBar(
@@ -46,7 +91,11 @@ class UserAccount extends StatelessWidget {
               padding: const EdgeInsets.only(right: 20),
               child: IconButton(
                 onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserNotification(),));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UserNotification(),
+                      ));
                 },
                 icon: Image.asset(
                   icons[1],
@@ -65,9 +114,15 @@ class UserAccount extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(
-                  icons[5],
-                  width: 90,
+                CircleAvatar(
+                  radius: 40,
+                  backgroundImage:
+                      (userImageUrl != null && userImageUrl!.isNotEmpty)
+                          ? NetworkImage(userImageUrl!) as ImageProvider
+                          : null,
+                  child: (userImageUrl == null || userImageUrl!.isEmpty)
+                      ? const Icon(Icons.person, size: 50)
+                      : null,
                 ),
               ],
             ),
@@ -75,7 +130,7 @@ class UserAccount extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomText(
-                    text: "Name",
+                    text: userName ?? "Name not available",
                     size: 16,
                     weight: FontWeight.w400,
                     color: myColor.textcolor),
@@ -85,7 +140,7 @@ class UserAccount extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomText(
-                    text: "Name@gmail.com",
+                    text: userEmail ?? "Email not available",
                     size: 16,
                     weight: FontWeight.w400,
                     color: myColor.textcolor),
@@ -96,8 +151,11 @@ class UserAccount extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfile(),));
-
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserProfile(),
+                    ));
               },
               child: Row(
                 children: [
@@ -134,7 +192,11 @@ class UserAccount extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserHistory(),));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserHistory(),
+                    ));
               },
               child: Row(
                 children: [
@@ -151,7 +213,11 @@ class UserAccount extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserTermsAndConditions(),));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserTermsAndConditions(),
+                    ));
               },
               child: Row(
                 children: [
@@ -166,7 +232,6 @@ class UserAccount extends StatelessWidget {
                 ],
               ),
             ),
-           
             InkWell(
               onTap: () {
                 _launchEmail("Vaishakp2024@gmail.com", context);

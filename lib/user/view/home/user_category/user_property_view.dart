@@ -11,13 +11,19 @@ import 'package:hommie/user/userprovider/user_provider_class.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class UserPropertyView extends StatelessWidget {
+class UserPropertyView extends StatefulWidget {
   const UserPropertyView({super.key});
 
   @override
+  State<UserPropertyView> createState() => _UserPropertyViewState();
+}
+
+class _UserPropertyViewState extends State<UserPropertyView> {
+  var activeIndex = 0;
+  @override
   Widget build(BuildContext context) {
-    final smoothIndicatorProvider =
-        Provider.of<SmoothIndicatorProvider>(context);
+    // final smoothIndicatorProvider =
+        // Provider.of<SmoothIndicatorProvider>(context);
     return Scaffold(
         body: Stack(
       children: [
@@ -36,7 +42,9 @@ class UserPropertyView extends StatelessWidget {
             options: CarouselOptions(
               height: 390.h,
               onPageChanged: (index, reason) {
-                smoothIndicatorProvider.currentActiveIndex(index);
+                setState(() {
+                  activeIndex = index;
+                });
               },
             )),
         Padding(
@@ -65,7 +73,7 @@ class UserPropertyView extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
                     child: AnimatedSmoothIndicator(
-                      activeIndex: smoothIndicatorProvider.activeIndex,
+                      activeIndex: activeIndex,
                       count: backgroundimage.length,
                       effect: JumpingDotEffect(
                         dotHeight: 8,

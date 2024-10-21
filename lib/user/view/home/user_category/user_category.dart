@@ -158,7 +158,7 @@ class UserCategory extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => UserViewLands(),));
+              // Navigator.push(context, MaterialPageRoute(builder: (context) => UserViewLands(),));
 
                   },
                   child: SizedBox(

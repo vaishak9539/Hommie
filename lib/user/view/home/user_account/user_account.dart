@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/alert.dart';
 import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/model/utils/style/img_path.dart';
+import 'package:hommie/user/view/login/user_Login.dart';
 import 'package:hommie/widgets/appbar.dart';
 import 'package:hommie/widgets/custom_text.dart';
 import 'package:hommie/user/view/home/user_account/user_history.dart';
@@ -26,6 +28,17 @@ class _UserAccountState extends State<UserAccount> {
   String? userEmail;
   String? userImageUrl;
 
+  //    Future<void> _getuserDetails() async {
+  //   try {
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     setState(() {
+  //       userId = prefs.getString("userUid");
+  //     });
+  //   } catch (e) {
+  //     print("Error fetching user details: $e");
+  //   }
+  // }
+
   Future<void> _getuserDetails() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -40,18 +53,164 @@ class _UserAccountState extends State<UserAccount> {
             .get();
 
         if (userSnapshot.exists) {
-          setState(() {
-            userName = userSnapshot["Name"];
-            userEmail = userSnapshot["Email"];
-            userImageUrl = userSnapshot["ImageUrl"];
-            print("object : $userName");
-            print("object : $userEmail");
-          });
+          // Ensure userSnapshot data is not null
+          // Map<String, dynamic>? userData =
+          //     userSnapshot.data() as Map<String, dynamic>?;
+
+          if (userSnapshot != null) {
+            setState(() {
+              userName = userSnapshot["Name"] ?? "Name not available";
+              userEmail = userSnapshot["Email"] ?? "Email not available";
+              // Check if 'ImageUrl' exists in the document data
+              userImageUrl = userSnapshot["ImageUrl"];
+                  
+
+              print("Name: $userName");
+              print("Email: $userEmail");
+            });
+          }
         }
       }
     } catch (e) {
-      print("Error fetching agency details: $e");
+      print("Error fetching user details: $e");
     }
+  }
+
+  void agencyDeleteAccount() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text(
+            "Delete Your Account",
+            style: TextStyle(color: Colors.red),
+          ),
+          content: const Text(
+            "Are you sure you want to delete your account?",
+            style: TextStyle(color: Colors.black),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text(
+                "Cancel",
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                try {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  String? userUid = prefs.getString("userUid");
+
+                  if (userUid != null) {
+                    // Delete account from Firestore
+                    await FirebaseFirestore.instance
+                        .collection("Agencies")
+                        .doc(userUid)
+                        .delete();
+
+                    // Delete Firebase Authentication account
+                    User? user = FirebaseAuth.instance.currentUser;
+                    if (user != null) {
+                      await user
+                          .delete(); // Deletes user from Firebase Authentication
+                    }
+
+                    // Show success message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Account deleted successfully"),
+                      ),
+                    );
+
+                    // Remove agencyId from SharedPreferences
+                    await prefs.remove("agencyUid");
+                    Navigator.pop(context);
+                    // Navigate to the login screen
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UserLogin(),
+                      ),
+                      (route) => false,
+                    );
+                  } else {
+                    print("Agency ID is null");
+                  }
+                } catch (e) {
+                  print("Error deleting account: $e");
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Error deleting account: $e")),
+                  );
+                }
+              },
+              child: const Text(
+                "Delete",
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void agencyLogoutdialogbox() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Text(
+            "Are you sure ?",
+            style: TextStyle(fontSize: 15),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  "cancel",
+                  style: TextStyle(color: Colors.black),
+                )),
+            TextButton(
+                onPressed: () async {
+                  try {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    await prefs.remove("userUid");
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Logged out successfully")),
+                    );
+
+                    Navigator.pop(context);
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UserLogin(),
+                      ),
+                      (route) => false,
+                    );
+                  } catch (e) {
+                    print("Error logging out: $e");
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Error logging out: $e")),
+                    );
+                  }
+                },
+                child: Text(
+                  "logout",
+                  style: TextStyle(color: Colors.red),
+                ))
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _launchEmail(String email, BuildContext context) async {
@@ -108,6 +267,74 @@ class _UserAccountState extends State<UserAccount> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            //      SizedBox(
+            //   height: 30.h,
+            // ),
+            // StreamBuilder<DocumentSnapshot>(
+            //   stream: FirebaseFirestore.instance.collection('Users').doc(userId).snapshots(),
+            //   builder: (context, snapshot) {
+            //     if (snapshot.hasError) {
+            //       return Center(child: Text('Error fetching user data'));
+            //     }
+
+            //     if (snapshot.connectionState == ConnectionState.waiting) {
+            //       return Center(child: CircularProgressIndicator());
+            //     }
+
+            //     if (!snapshot.hasData || !snapshot.data!.exists) {
+            //       return Center(child: Text('No user data available'));
+            //     }
+
+            //     // Fetch user data
+            //     var userData = snapshot.data!.data() as Map<String, dynamic>?;
+
+            //     if (userData == null) {
+            //       return Center(child: Text('No user data available'));
+            //     }
+
+            //     // Update the UI fields
+            //     userName = userData['Name'] ?? 'Name not available';
+            //     userEmail = userData['Email'] ?? 'Email not available';
+            //     userImageUrl = userData['ImageUrl'];
+
+            //     return Column(
+            //       children: [
+            //         Row(
+            //           mainAxisAlignment: MainAxisAlignment.center,
+            //           children: [
+            //             CircleAvatar(
+            //               radius: 40,
+            //               backgroundImage: (userImageUrl != null && userImageUrl!.isNotEmpty)
+            //                   ? NetworkImage(userImageUrl!) as ImageProvider
+            //                   : AssetImage("assets/images/User 1.png") as ImageProvider,
+            //             ),
+            //           ],
+            //         ),
+            //         Row(
+            //           mainAxisAlignment: MainAxisAlignment.center,
+            //           children: [
+            //             CustomText(
+            //                 text: userName ?? "Name not available",
+            //                 size: 16,
+            //                 weight: FontWeight.w400,
+            //                 color: myColor.textcolor),
+            //           ],
+            //         ),
+            //         Row(
+            //           mainAxisAlignment: MainAxisAlignment.center,
+            //           children: [
+            //             CustomText(
+            //                 text: userEmail ?? "Email not available",
+            //                 size: 16,
+            //                 weight: FontWeight.w400,
+            //                 color: myColor.textcolor),
+            //           ],
+            //         ),
+            //       ],
+            //     );
+            //   },
+            // ),
+
             SizedBox(
               height: 30.h,
             ),
@@ -116,13 +343,12 @@ class _UserAccountState extends State<UserAccount> {
               children: [
                 CircleAvatar(
                   radius: 40,
-                  backgroundImage:
-                      (userImageUrl != null && userImageUrl!.isNotEmpty)
-                          ? NetworkImage(userImageUrl!) as ImageProvider
-                          : null,
-                  child: (userImageUrl == null || userImageUrl!.isEmpty)
-                      ? const Icon(Icons.person, size: 50)
-                      : null,
+                  backgroundImage: (userImageUrl != null &&
+                          userImageUrl!.isNotEmpty)
+                      ? NetworkImage(userImageUrl!) as ImageProvider
+                      : AssetImage(
+                              "assets/images/User 1.png") // Fallback to asset image
+                          as ImageProvider<Object>,
                 ),
               ],
             ),
@@ -149,6 +375,7 @@ class _UserAccountState extends State<UserAccount> {
             SizedBox(
               height: 30.h,
             ),
+
             InkWell(
               onTap: () {
                 Navigator.push(
@@ -251,7 +478,7 @@ class _UserAccountState extends State<UserAccount> {
             ),
             InkWell(
               onTap: () {
-                userDeleteAccount(context);
+                // userDeleteAccount(context);
               },
               child: Row(
                 children: [
@@ -268,7 +495,7 @@ class _UserAccountState extends State<UserAccount> {
             ),
             InkWell(
               onTap: () {
-                userLogoutdialogbox(context);
+                agencyLogoutdialogbox();
               },
               child: Row(
                 children: [

@@ -52,13 +52,9 @@ class AdminUserList extends StatelessWidget {
                         ));
                   },
                   leading: CircleAvatar(
-                    backgroundImage:
-                        (userImageUrl != null && userImageUrl!.isNotEmpty)
-                            ? NetworkImage(userImageUrl!) as ImageProvider
-                            : null,
-                    child: (userImageUrl == null || userImageUrl!.isEmpty)
-                        ? const Icon(Icons.person, size: 50)
-                        : null,
+                    backgroundImage: (userImageUrl != null && userImageUrl.isNotEmpty)
+                          ? NetworkImage(userImageUrl)
+                          : AssetImage("assets/images/User 1.png"),
                   ),
                   title: CustomText(
                       text: name,

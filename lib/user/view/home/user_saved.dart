@@ -1,24 +1,65 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hommie/agency/view/agencyhome/agencyitemlist/agency_add_home_details.dart';
 import 'package:hommie/model/utils/style/color.dart';
+import 'package:hommie/user/view/home/user_category/user_property_view.dart';
+import 'package:hommie/user/view/home/user_category/user_view_home.dart';
+import 'package:hommie/user/view/home/user_notification.dart';
 import 'package:hommie/widgets/appbar.dart';
 import 'package:hommie/widgets/custom_card.dart';
 import 'package:hommie/widgets/custom_text.dart';
-import 'package:hommie/user/view/home/user_notification.dart';
+
 
 class UserSaved extends StatelessWidget {
-  const UserSaved({super.key});
+  const UserSaved({Key? key}) : super(key: key);
+
+  Future<List<Property>> fetchSavedProperties(List<String> savedItemIds) async {
+    print("Fetching saved properties for IDs: $savedItemIds");
+
+    try {
+      // Query all documents in the 'item_List' subcollection across all documents
+      QuerySnapshot itemsSnapshot = await FirebaseFirestore.instance.collectionGroup("item_List").get();
+      print("Total items in 'item_List' subcollection: ${itemsSnapshot.docs.length}");
+
+      // Find the documents that match our saved item IDs
+      List<QueryDocumentSnapshot> matchingDocs = itemsSnapshot.docs
+          .where((doc) => savedItemIds.contains(doc.id))
+          .toList();
+      print("Matching documents found: ${matchingDocs.length}");
+
+      List<Property> properties = [];
+
+      for (var doc in matchingDocs) {
+        try {
+          print("Processing document: ${doc.id}");
+          print("Document data: ${doc.data()}");
+          
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+          Property property = Property.fromFirestore(data);
+          properties.add(property);
+          
+          print("Successfully added property: ${property.name}");
+        } catch (e) {
+          print("Error processing document ${doc.id}: $e");
+          print("Document data: ${doc.data()}");
+        }
+      }
+
+      print("Final number of properties: ${properties.length}");
+      return properties;
+    } catch (e) {
+      print("Error in fetchSavedProperties: $e");
+      return [];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final String? userId = FirebaseAuth.instance.currentUser?.uid;
+    print("Current user ID: $userId"); // Debug print
 
-    return
-
-    Scaffold(
+    return Scaffold(
       backgroundColor: myColor.background,
       appBar: CustomAppBar(
         automaticallyImplyLeading: false,
@@ -51,26 +92,18 @@ class UserSaved extends StatelessWidget {
                 }
 
                 if (userSnapshot.hasError) {
+                  print("Error in userSnapshot: ${userSnapshot.error}"); // Debug print
                   return Center(child: Text('Error: ${userSnapshot.error}'));
                 }
 
-                if (!userSnapshot.hasData || userSnapshot.data!.data() == null) {
-                  return  Center(
-                    child: CustomText(
-                      text: 'No saved items yet',
-                      size: 15,
-                      color: Colors.white,
-                      weight: FontWeight.w400,
-                    ),
-                  );
-                }
-
-                // Get the saved item IDs
                 Map<String, dynamic> savedData =
-                    userSnapshot.data!.data() as Map<String, dynamic>;
+                    userSnapshot.data?.data() as Map<String, dynamic>? ?? {};
+                print("Saved data: $savedData"); // Debug print
+
                 List<String> savedItemIds = savedData.keys
                     .where((key) => savedData[key] == true)
                     .toList();
+                print("Saved item IDs: $savedItemIds"); // Debug print
 
                 if (savedItemIds.isEmpty) {
                   return Center(
@@ -83,23 +116,24 @@ class UserSaved extends StatelessWidget {
                   );
                 }
 
-                // Fetch the saved properties from 'item_List' collection
-                return FutureBuilder<List<DocumentSnapshot>>(
-                   future: _fetchSavedItems(savedItemIds),
+                return FutureBuilder<List<Property>>(
+                  future: fetchSavedProperties(savedItemIds),
                   builder: (context, savedSnapshot) {
-                    if (savedSnapshot.connectionState ==
-                        ConnectionState.waiting) {
+                    if (savedSnapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
                     }
 
                     if (savedSnapshot.hasError) {
+                      print("Error in savedSnapshot: ${savedSnapshot.error}"); // Debug print
                       return Center(
                         child: Text('Error: ${savedSnapshot.error}'),
                       );
                     }
-                    List<DocumentSnapshot> savedDocs = savedSnapshot.data ?? [];
 
-                     if (savedDocs.isEmpty) {
+                    List<Property> savedProperties = savedSnapshot.data ?? [];
+                    print("Number of saved properties: ${savedProperties.length}"); // Debug print
+
+                    if (savedProperties.isEmpty) {
                       return Center(
                         child: CustomText(
                           text: 'No saved items found',
@@ -109,103 +143,114 @@ class UserSaved extends StatelessWidget {
                         ),
                       );
                     }
-                    return ListView.builder(
-                      itemCount: savedDocs.length,
-                      itemBuilder: (context, index) {
-                         var itemData = savedDocs[index].data() as Map<String, dynamic>;
 
-                       Property item = Property.fromFirestore(savedDocs[index]);
+                    return ListView.builder(
+                      itemCount: savedProperties.length,
+                      itemBuilder: (context, index) {
+                        Property property = savedProperties[index];
+                        print("Building item for property: ${property.name}"); // Debug print
+
                         return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          child: Card(
-                            elevation: 4,
-                            child: Container(
-                              height: 280.h,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
+                          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => UserPropertyView(
+                                    homedetails: property,
+                                    villadetails: null,
+                                    apartmentdetails: null,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Card(
+                              elevation: 4,
+                              shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                color: const Color.fromARGB(255, 231, 246, 245),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: CustomCard(
-                                      child: SizedBox(
-                                        height: 160.h,
-                                        width: 292.w,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          child: item.imageUrls.isNotEmpty
-                                              ? Image.network(
-                                                  item.imageUrls[0],
-                                                  fit: BoxFit.cover,
-                                                )
-                                              : Container(
-                                                  color: Colors.grey[800],
-                                                  child: const Icon(
-                                                    Icons.home,
-                                                    size: 60,
-                                                    color: Colors.white,
+                              child: Container(
+                                height: 280.h,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: const Color.fromARGB(255, 231, 246, 245),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: CustomCard(
+                                        child: SizedBox(
+                                          height: 160.h,
+                                          width: double.infinity,
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: property.imageUrls.isNotEmpty
+                                                ? Image.network(
+                                                    property.imageUrls[0],
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : Container(
+                                                    color: Colors.grey[800],
+                                                    child: const Icon(
+                                                      Icons.home,
+                                                      size: 60,
+                                                      color: Colors.white,
+                                                    ),
                                                   ),
-                                                ),
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 18, top: 8),
-                                    child: CustomText(
-                                      text: item.name,
-                                      size: 20,
-                                      weight: FontWeight.bold,
-                                      color: myColor.textcolor,
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 18),
-                                        child: Icon(Icons.location_on,
-                                            color: myColor.textcolor, size: 15),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 18, top: 8),
+                                      child: CustomText(
+                                        text: property.name,
+                                        size: 20,
+                                        weight: FontWeight.bold,
+                                        color: myColor.textcolor,
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 6, top: 5),
-                                        child: CustomText(
-                                          text: item.fullAddress ??
-                                              "Address not available",
-                                          size: 13,
-                                          weight: FontWeight.w400,
-                                          color: myColor.textcolor,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 18),
+                                          child: Icon(Icons.location_on,
+                                              color: myColor.textcolor, size: 15),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.only(left: 25, top: 5),
-                                    child: CustomText(
-                                      text: "${item.setPrice ?? 'N/A'} L",
-                                      size: 23,
-                                      weight: FontWeight.bold,
-                                      color: myColor.textcolor,
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(left: 6, top: 5),
+                                            child: CustomText(
+                                              text: property.fullAddress ?? "Address not available",
+                                              size: 13,
+                                              weight: FontWeight.w400,
+                                              color: myColor.textcolor,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  )
-                                ],
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 25, top: 5),
+                                      child: CustomText(
+                                        text: "${property.setPrice ?? 'N/A'} L",
+                                        size: 23,
+                                        weight: FontWeight.bold,
+                                        color: myColor.textcolor,
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         );
                       },
                     );
-
-                    // Display the saved items
-
                   },
                 );
               },
@@ -214,21 +259,24 @@ class UserSaved extends StatelessWidget {
   }
 }
 
-Future<List<DocumentSnapshot>> _fetchSavedItems(List<String> itemIds) async {
-  try {
-    // Use a query to fetch multiple documents at once
 
-    QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collectionGroup('item_List') .where(FieldPath.documentId)// Adjust the collection name as necessary
+
+
+// Future<List<DocumentSnapshot>> _fetchSavedItems(List<String> savedItemIds) async {
+//   try {
+//     // Use a query to fetch multiple documents at once
+
+//     QuerySnapshot snapshot = await FirebaseFirestore.instance
+//         .collectionGroup('item_List') .where(FieldPath.documentId, whereIn: savedItemIds )// Adjust the collection name as necessary
       
-        .get();
+//         .get();
 
-    return snapshot.docs;
-  } catch (e) {
-    print('Error fetching saved items: $e');
-    return [];
-  }
-}
+//     return snapshot.docs;
+//   } catch (e) {
+//     print('Error fetching saved items: $e');
+//     return [];
+//   }
+// }
 
 // ------------------------now commented ---------------------------
 

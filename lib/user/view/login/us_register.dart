@@ -316,11 +316,7 @@ class _UserRegisterState extends State<UserRegister> {
                           color: Colors.white),
                       InkWell(
                           onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => UserLogin(),
-                                ));
+                            Navigator.pop(context);
                           },
                           child: Padding(
                             padding: const EdgeInsets.only(left: 6),

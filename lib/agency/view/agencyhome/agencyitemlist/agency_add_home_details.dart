@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hommie/agency/view/agencyhome/agencyitemlist/agency_added_successfully.dart';
 import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/widgets/appbar.dart';
 import 'package:hommie/widgets/cu_inkwell_button.dart';
@@ -84,11 +85,12 @@ class _AgencyAddHomeDetailsState extends State<AgencyAddHomeDetails> {
         if (user == null) {
           throw 'User not authenticated';
         }
-        String userId = user.uid;
-
+        String agencyId = user.uid;
+          print(agencyId);
         List<String> imageUrls = await _uploadImages();
 
         Property newProperty = Property(
+          agencyId: agencyId,
           typ: widget.typ,
           name: nameController.text,
           bedroom: bedroomController.text,
@@ -109,7 +111,7 @@ class _AgencyAddHomeDetailsState extends State<AgencyAddHomeDetails> {
 
         DocumentReference docRef = await FirebaseFirestore.instance
             .collection('items')
-            .doc(userId)
+            .doc(agencyId)
             .collection('item_List')
             .add(newProperty.toMap());
 
@@ -119,12 +121,12 @@ class _AgencyAddHomeDetailsState extends State<AgencyAddHomeDetails> {
         setState(() {
           isLoading = false;
         });
-
+          
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Property added successfully!')),
         );
 
-        Navigator.pop(context);
+        Navigator.push(context, MaterialPageRoute(builder: (context) => AgencyAddedSuccessfully(),));
       } catch (e) {
         setState(() {
           isLoading = false;
@@ -256,6 +258,7 @@ class _AgencyAddHomeDetailsState extends State<AgencyAddHomeDetails> {
                     child: CuTextField(
                       hintText: "SqFt",
                       controller: sqftController,
+                      keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return "Please enter square feet";
@@ -349,6 +352,7 @@ class _AgencyAddHomeDetailsState extends State<AgencyAddHomeDetails> {
                     child: CuTextField(
                       hintText: "Set Price",
                       controller: setPriceController,
+                      keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return "Please enter the price";
@@ -421,6 +425,7 @@ class Property {
   final String? setPrice;
   final String? description;
   final DateTime timestamp;
+  final String? agencyId;
 
   Property({
     this.id = '',
@@ -440,11 +445,13 @@ class Property {
     required this.setPrice,
     required this.description,
     required this.timestamp,
+    required this.agencyId,
   });
 
   factory Property.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return Property(
+      agencyId: data["agencyId"],
       id: doc.id,
       typ: data['typ'] ?? '',
       name: data['name'] ?? '',
@@ -468,6 +475,7 @@ class Property {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      "agencyId" : agencyId,
       'typ': typ,
       'name': name,
       'bedroom': bedroom,

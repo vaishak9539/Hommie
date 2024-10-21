@@ -47,10 +47,11 @@ class _AdminAgencyDetailsState extends State<AdminAgencyDetails> {
                           radius: 45,
                           backgroundImage: (userImageUrl != null && userImageUrl.isNotEmpty)
                               ? NetworkImage(userImageUrl) as ImageProvider
-                              : null,
-                          child: (userImageUrl == null || userImageUrl.isEmpty)
-                              ? const Icon(Icons.person, size: 50)
-                              : null,
+                             : AssetImage(
+                                          "assets/images/User 1.png") // Fallback to asset image
+                                      as ImageProvider<Object>,
+                        
+                          
                         ),
                       ),
                       Row(

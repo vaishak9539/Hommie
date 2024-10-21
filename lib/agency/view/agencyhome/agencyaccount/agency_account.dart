@@ -251,10 +251,12 @@ void agencyDeleteAccount() {
                   backgroundImage:
                       (agencyImageUrl != null && agencyImageUrl!.isNotEmpty)
                           ? NetworkImage(agencyImageUrl!) as ImageProvider
-                          : null,
-                  child: (agencyImageUrl == null || agencyImageUrl!.isEmpty)
-                      ? const Icon(Icons.person, size: 50)
-                      : null,
+                          : AssetImage(
+                                          "assets/images/User 1.png") // Fallback to asset image
+                                      as ImageProvider<Object>,
+                  // child: (agencyImageUrl == null || agencyImageUrl!.isEmpty)
+                  //     ? const Icon(Icons.person, size: 50)
+                  //     : null,
                 ),
               ],
             ),

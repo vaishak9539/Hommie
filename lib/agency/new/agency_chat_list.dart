@@ -9,7 +9,7 @@ import 'package:hommie/widgets/appbar.dart';
 import 'package:hommie/widgets/custom_card.dart';
 
 class AgencyChatList extends StatelessWidget {
-  const AgencyChatList({super.key});
+  const AgencyChatList({super.key, required recipe, required String recipeId});
   
   @override
   Widget build(BuildContext context) {

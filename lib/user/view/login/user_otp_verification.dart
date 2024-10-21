@@ -72,7 +72,7 @@ class UserOtpVerification extends StatelessWidget {
               ),
               CustomInkwellButton(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserResetPassword(),));
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => UserResetPassword(),));
                   },
                   text: "Next")
             ],

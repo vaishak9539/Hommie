@@ -8,12 +8,17 @@ class CustomText extends StatelessWidget {
   final FontWeight weight;
   final Color color;
   final double? letterSpacing;
+  int? maxLines;
+  TextOverflow? overflow;
+
    CustomText({
     required this.text,
     required this.size,
     required this.weight,
     required this.color,
+    this.maxLines,
     this.letterSpacing,
+    this.overflow,
     super.key
    });
 
@@ -21,8 +26,11 @@ class CustomText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
+      maxLines: maxLines,
+      overflow: overflow,
       style: GoogleFonts.poppins(
         textStyle: TextStyle(
+          
           fontSize: size,
           fontWeight: weight,
           color: color,

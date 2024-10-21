@@ -92,7 +92,7 @@ class _AgencyItemViewState extends State<AgencyItemView> {
                     padding: const EdgeInsets.only(top: 10),
                     child: AnimatedSmoothIndicator(
                       activeIndex: activeIndex,
-                      count: backgroundimage.length,
+                      count:imageUrls.length,
                       effect: JumpingDotEffect(
                         dotHeight: 8,
                         dotWidth: 8,

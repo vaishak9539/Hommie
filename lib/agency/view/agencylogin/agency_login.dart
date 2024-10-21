@@ -49,7 +49,7 @@ class _AgencyLoginState extends State<AgencyLogin> {
           String? agId = prefs.getString("agencyUid");
           print("Shared Preference Student ID: $agId");
 
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
             return AgencyBottomNav();
           }));
           Fluttertoast.showToast(

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hommie/model/utils/style/color.dart';
+import 'package:hommie/user/view/home/user_category/user_property_view.dart';
 import 'package:hommie/widgets/appbar.dart';
 import 'package:hommie/widgets/custom_text.dart';
 
@@ -85,11 +86,15 @@ class _UserViewHomeState extends State<UserViewHome> {
                   mainAxisSpacing: 8.0,
                   crossAxisSpacing: 8.0,
                   childAspectRatio: 9 / 12,
+                  mainAxisExtent: 240,
+                  
+                  
                 ),
                 itemBuilder: (context, index) {
                   var itemData = homeProperties[index].data() as Map<String, dynamic>;
                   var property = Property.fromFirestore(itemData);
                   bool isSaved = saved[property.id] ?? false;
+                  // var homeid=property.id;
 
                   return Stack(
                     children: [
@@ -97,7 +102,7 @@ class _UserViewHomeState extends State<UserViewHome> {
                         padding: const EdgeInsets.all(8.0),
                         child: InkWell(
                           onTap: () {
-                            // Navigate to property details
+                             Navigator.push(context,MaterialPageRoute(builder: (context) => UserPropertyView(homedetails:property, villadetails: null, apartmentdetails: null, ),));
                           },
                           child: Card(
                             elevation: 4,
@@ -129,6 +134,8 @@ class _UserViewHomeState extends State<UserViewHome> {
                                         color: myColor.textcolor,
                                       ),
                                       CustomText(
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
                                         text: property.fullAddress ?? "",
                                         size: 12,
                                         weight: FontWeight.w400,
@@ -193,6 +200,7 @@ class Property {
   final String? description;
   final DateTime timestamp;
   final String userId;
+  final String? agencyId;
 
   Property({
     required this.id,
@@ -213,6 +221,7 @@ class Property {
     this.description,
     required this.timestamp,
     required this.userId,
+     this.agencyId,
   });
 
   factory Property.fromFirestore(Map<String, dynamic> data) {
@@ -235,6 +244,7 @@ class Property {
       description: data['description'],
       timestamp: (data['timestamp'] as Timestamp).toDate(),
       userId: data['userId'] ?? '',
+      agencyId: data['agencyId'],
     );
   }
 
@@ -258,6 +268,7 @@ class Property {
       'description': description,
       'timestamp': FieldValue.serverTimestamp(),
       'userId': userId,
+      'agencyId': agencyId,
     };
   }
 }

@@ -24,9 +24,11 @@ class CustomTextField extends StatelessWidget {
   final Color? fillColor;
   final Color? cursorColor;
   final TextStyle? hintStyle;
+  final Function(String)? onChanged;
+  
 
-  CustomTextField({
-    Key? key,
+  const CustomTextField({
+    super.key,
     this.controller,
     this.hintText,
     this.keyboardType,
@@ -48,8 +50,9 @@ class CustomTextField extends StatelessWidget {
     this.validator,
     this.maxLines = 1,
     this.cursorColor,
-    this.hintStyle
-  }) : super(key: key);
+    this.hintStyle,
+    this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +64,9 @@ class CustomTextField extends StatelessWidget {
         keyboardType: keyboardType,
         obscureText: obscureText,
         maxLines: maxLines,
+        onChanged: (value) {
+          
+        },
         // onChanged: onChanged,
         validator: validator,
         style: GoogleFonts.poppins(
@@ -80,23 +86,34 @@ class CustomTextField extends StatelessWidget {
               ),
             ),
             prefixIcon: prefixIcon,
-            suffixIcon: dropdownButton != null ? dropdownButton : suffixIcon,
+            suffixIcon: dropdownButton ?? suffixIcon,
             contentPadding: contentPadding,
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
+
                 color: borderColor,
                 width: borderWidth,
+                
               ),
               borderRadius: BorderRadius.circular(borderRadius),
             ),
+
+            
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(borderRadius),
+              borderSide: BorderSide(color: myColor.errortext),
+            ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(borderRadius),
-              borderSide: BorderSide(color: myColor.errortext)
+              borderSide: BorderSide(color: myColor.errortext),
+              
             ),
             enabledBorder: OutlineInputBorder(
+
               borderSide: BorderSide(
                 color: borderColor,
                 width: borderWidth,
+                
               ),
               borderRadius: BorderRadius.circular(borderRadius),
             ),
@@ -125,7 +142,7 @@ class CuTextField extends StatelessWidget {
   final IconButton? suffixIcon;
   final bool readOnly;
 
-  CuTextField({
+  const CuTextField({
     this.controller,
     this.hintText,
     this.keyboardType,

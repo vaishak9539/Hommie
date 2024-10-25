@@ -25,7 +25,6 @@ class CustomTextField extends StatelessWidget {
   final Color? cursorColor;
   final TextStyle? hintStyle;
   final Function(String)? onChanged;
-  
 
   const CustomTextField({
     super.key,
@@ -64,9 +63,7 @@ class CustomTextField extends StatelessWidget {
         keyboardType: keyboardType,
         obscureText: obscureText,
         maxLines: maxLines,
-        onChanged: (value) {
-          
-        },
+        onChanged: (value) {},
         // onChanged: onChanged,
         validator: validator,
         style: GoogleFonts.poppins(
@@ -90,15 +87,11 @@ class CustomTextField extends StatelessWidget {
             contentPadding: contentPadding,
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
-
                 color: borderColor,
                 width: borderWidth,
-                
               ),
               borderRadius: BorderRadius.circular(borderRadius),
             ),
-
-            
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(borderRadius),
               borderSide: BorderSide(color: myColor.errortext),
@@ -106,14 +99,11 @@ class CustomTextField extends StatelessWidget {
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(borderRadius),
               borderSide: BorderSide(color: myColor.errortext),
-              
             ),
             enabledBorder: OutlineInputBorder(
-
               borderSide: BorderSide(
                 color: borderColor,
                 width: borderWidth,
-                
               ),
               borderRadius: BorderRadius.circular(borderRadius),
             ),
@@ -150,7 +140,7 @@ class CuTextField extends StatelessWidget {
     this.borderColor = Colors.black,
     this.borderWidth = 1.0,
     this.cursorColor = Colors.black54,
-    this.contentPadding = const EdgeInsets.only(left: 8,top: 15),
+    this.contentPadding = const EdgeInsets.only(left: 8, top: 15),
     this.outlinePadding = const EdgeInsets.only(left: 25, right: 30),
     this.fontWeight = FontWeight.normal,
     this.fontSize = 16.0,
@@ -159,7 +149,7 @@ class CuTextField extends StatelessWidget {
     this.maxLines = 1,
     this.hintStyle,
     this.suffixIcon,
-    this.readOnly=false,
+    this.readOnly = false,
   });
 
   @override

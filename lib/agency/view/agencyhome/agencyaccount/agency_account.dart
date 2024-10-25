@@ -53,7 +53,7 @@ void agencyDeleteAccount() {
               try {
                 SharedPreferences prefs = await SharedPreferences.getInstance();
                 String? agencyId = prefs.getString("agencyUid");
-
+            
                 if (agencyId != null) {
                   // Delete account from Firestore
                   await FirebaseFirestore.instance
@@ -64,7 +64,8 @@ void agencyDeleteAccount() {
                   // Delete Firebase Authentication account
                   User? user = FirebaseAuth.instance.currentUser;
                   if (user != null) {
-                    await user.delete();  // Deletes user from Firebase Authentication
+                   FirebaseFirestore.instance.collection('Agencies').doc(user.uid).delete();
+      await user.delete();// Deletes user from Firebase Authentication
                   }
 
                   // Show success message

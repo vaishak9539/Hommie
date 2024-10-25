@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:hommie/admin/admin_view/admin_user_details.dart';
 import 'package:hommie/model/utils/style/color.dart';
-import 'package:hommie/model/utils/style/img_path.dart';
 import 'package:hommie/widgets/custom_card.dart';
 import 'package:hommie/widgets/custom_text.dart';
-import 'package:hommie/admin/admin_view/admin_user_details.dart';
 
 class AdminUserList extends StatelessWidget {
   const AdminUserList({super.key});
@@ -52,7 +51,8 @@ class AdminUserList extends StatelessWidget {
                         ));
                   },
                   leading: CircleAvatar(
-                    backgroundImage: (userImageUrl != null && userImageUrl.isNotEmpty)
+                    backgroundImage: 
+                    (userImageUrl != null && userImageUrl.isNotEmpty)
                           ? NetworkImage(userImageUrl)
                           : AssetImage("assets/images/User 1.png"),
                   ),

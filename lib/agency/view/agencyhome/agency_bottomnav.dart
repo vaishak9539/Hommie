@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hommie/agency/new/agency_chat_list.dart';
 import 'package:hommie/agency/view/agencyhome/agency_history.dart';
 import 'package:hommie/agency/view/agencyhome/agencyaccount/agency_account.dart';
 import 'package:hommie/agency/view/agencyhome/agencyitemlist/agency_item_list.dart';
@@ -15,7 +16,7 @@ class AgencyBottomNav extends StatefulWidget {
 class _AgencyBottomNavState extends State<AgencyBottomNav> {
   List<Widget> pages = [
      AgencyItemList(),
-    const AgencyHistory(),
+    AgencyChatList(),
     const AgencyAccount(),
   ];
   int selectedIndex = 0;

@@ -2,11 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hommie/admin/admin_view/admin_agency_details.dart';
 import 'package:hommie/model/utils/style/color.dart';
-import 'package:hommie/model/utils/style/img_path.dart';
 import 'package:hommie/widgets/custom_card.dart';
 import 'package:hommie/widgets/custom_text.dart';
-import 'package:hommie/admin/admin_view/admin_agency_details.dart';
 
 class AdminAgencyList extends StatefulWidget {
   const AdminAgencyList({super.key});
@@ -91,7 +90,7 @@ class _AdminAgencyListState extends State<AdminAgencyList> {
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              AdminAgencyDetails(agencydata : agencydata)
+                              AdminAgencyDetails(agencydata : agencydata, docid : docid)
                         ));
                   },
                  leading: CircleAvatar(

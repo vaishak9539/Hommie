@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hommie/model/utils/style/img_path.dart';
 import 'package:hommie/admin/admin_view/admin_agency_request.dart';
-import 'package:hommie/admin/admin_view/admin_badge.dart';
 import 'package:hommie/admin/admin_view/admin_users.dart';
-import 'package:hommie/admin/adminprovider/adminprovider.dart';
 import 'package:iconly/iconly.dart';
-import 'package:provider/provider.dart';
 
 class AdminBottomnav extends StatefulWidget {
   const AdminBottomnav({super.key});

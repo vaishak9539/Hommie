@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/model/utils/style/img_path.dart';
-import 'package:hommie/widgets/appbar.dart';
-import 'package:hommie/widgets/custom_text.dart';
 import 'package:hommie/user/view/home/user_category/user_view_Apartment.dart';
 import 'package:hommie/user/view/home/user_category/user_view_home.dart';
-import 'package:hommie/user/view/home/user_category/user_view_lands.dart';
 import 'package:hommie/user/view/home/user_category/user_view_villa.dart';
 import 'package:hommie/user/view/home/user_notification.dart';
+import 'package:hommie/widgets/appbar.dart';
+import 'package:hommie/widgets/custom_text.dart';
 
 class UserCategory extends StatelessWidget {
   const UserCategory({super.key});

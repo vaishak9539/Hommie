@@ -197,6 +197,7 @@ import 'package:hommie/agency/view/agencyhome/agencyitemlist/agency_item_view.da
 import 'package:hommie/agency/view/agencyhome/agencyitemlist/agency_list_update.dart';
 import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/model/utils/style/img_path.dart';
+import 'package:hommie/user/view/home/user_home.dart';
 import 'package:hommie/widgets/appbar.dart';
 import 'package:hommie/widgets/custom_text.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -215,20 +216,21 @@ class _AgencyItemListState extends State<AgencyItemList> {
   @override
   void initState() {
     super.initState();
-    _getUserId();
+    _getAgencyId();
   }
 
-  Future<void> _getUserId() async {
+  Future<void> _getAgencyId() async {
     // Fetch the currently logged-in user
-    final agency = FirebaseAuth.instance.currentUser;
-    print( "Firebase agencyUid :  $agency");
+    // final agency = FirebaseAuth.instance.currentUser;
+    
+    // print( "Firebase agencyUid :  $agency");
     SharedPreferences prefs = await SharedPreferences.getInstance();
           String? agId = prefs.getString("agencyUid");
           print("Shared Preference agencyUid: $agId");
     
-    if (agency != null ) {
+    if (agId != null ) {
       setState(() {
-        currenagencyId = agency.uid;
+        currenagencyId = agId;
         isLoading = false;
         print("Agency ID fetched: $currenagencyId"); // Debugging purpose
       });
@@ -327,8 +329,7 @@ class _AgencyItemListState extends State<AgencyItemList> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => AgencyItemView(
-                                            itemData: itemData.data()
-                                                as Map<String, dynamic>,
+                                            itemData: itemData.data(),
                                             documentId: documentId,
                                           ),
                                         ),

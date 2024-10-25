@@ -13,6 +13,7 @@ class AgencyAddedSuccessfully extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -27,7 +28,8 @@ class AgencyAddedSuccessfully extends StatelessWidget {
                 child: CustomText(text: "Successfully Added", size: 22, weight: FontWeight.w500, color: myColor.textcolor),
               )
             ],
-          )
+          ),
+          
         ],
       ),
     );

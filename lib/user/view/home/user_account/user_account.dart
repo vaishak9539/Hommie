@@ -116,8 +116,8 @@ class _UserAccountState extends State<UserAccount> {
                     // Delete Firebase Authentication account
                     User? user = FirebaseAuth.instance.currentUser;
                     if (user != null) {
-                      await user
-                          .delete(); // Deletes user from Firebase Authentication
+                       FirebaseFirestore.instance.collection('Users').doc(user.uid).delete();
+      await user.delete();/// Deletes user from Firebase Authentication
                     }
 
                     // Show success message
@@ -479,6 +479,7 @@ class _UserAccountState extends State<UserAccount> {
             InkWell(
               onTap: () {
                 // userDeleteAccount(context);
+                agencyDeleteAccount();
               },
               child: Row(
                 children: [

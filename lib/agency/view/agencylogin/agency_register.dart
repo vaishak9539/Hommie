@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hommie/agency/view/agencyhome/agency_bottomnav.dart';
 import 'package:hommie/agency/view/agencyhome/agencyaccount/agency_terms_conditions.dart';
-import 'package:hommie/agency/view/agencylogin/agency_login.dart';
 import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/widgets/cu_inkwell_button.dart';
 import 'package:hommie/widgets/custom_text.dart';
@@ -77,6 +76,7 @@ class _AgencyRegisterState extends State<AgencyRegister> {
             "Terms": ischecked,
             "AuthUid": agencyAuthenticationUid,
             'CreatedAt': DateTime.now(),
+            "ImageUrl" : '',
           });
 
           Navigator.push(

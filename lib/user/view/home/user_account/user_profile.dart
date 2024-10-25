@@ -195,10 +195,11 @@ class _UserProfileState extends State<UserProfile> {
                         backgroundImage: image != null
                             ? FileImage(
                                 image!) // If a new image is picked, show it
-                            : (imageurl != null && imageurl!.isNotEmpty)
+                            : (imageurl != null && imageurl!.isNotEmpty && imageurl == '')
                                 ? NetworkImage(
                                     imageurl!) // If image URL is available, show the network image
-                                : AssetImage(
+                                : 
+                                AssetImage(
                                         "assets/images/User 1.png") // Fallback to asset image
                                     as ImageProvider<Object>,
                         child: image == null &&

@@ -9,7 +9,7 @@ import 'package:hommie/widgets/custom_text.dart';
 
 class UserAgencyProfileView extends StatefulWidget {
   final agencyid;
-  const UserAgencyProfileView({super.key, required this.agencyid});
+  const UserAgencyProfileView({super.key, required this.agencyid,});
 
   @override
   State<UserAgencyProfileView> createState() => _UserAgencyProfileViewState();

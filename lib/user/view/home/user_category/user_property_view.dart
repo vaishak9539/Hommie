@@ -6,7 +6,7 @@ import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/model/utils/style/img_path.dart';
 import 'package:hommie/user/view/home/user_category/user_agency_profile_view.dart';
 import 'package:hommie/user/view/home/user_category/user_view_home.dart';
-import 'package:hommie/user/view/home/user_chat/user_chat_list.dart';
+import 'package:hommie/user/view/home/user_chat/user_chat.dart';
 import 'package:hommie/widgets/cu_inkwell_button.dart';
 import 'package:hommie/widgets/custom_text.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -227,7 +227,7 @@ class _UserPropertyViewState extends State<UserPropertyView> {
                           padding: const EdgeInsets.only(right: 25),
                           child: InkWell(
                               onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => UserAgencyProfileView(agencyid : propertyDetails.agencyId),));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => UserAgencyProfileView(agencyid : propertyDetails.agencyId,),));
                               },
                               child: CircleAvatar(
                                 backgroundImage: AssetImage(icons[5]),
@@ -561,8 +561,11 @@ class _UserPropertyViewState extends State<UserPropertyView> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+                  CustomInkwellButton(onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserChat(agencyId : propertyDetails.agencyId,propertyId : propertyDetails.id),));
+                  }, text: "Chat"),
                   CustomInkwellButton(
-                    width: 300.w,
+                    width: 150.w,
                     height: 45.h,
                   onTap: () {
                       // Make a phone call

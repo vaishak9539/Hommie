@@ -1,8 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/color.dart';
-import 'package:hommie/model/utils/style/img_path.dart';
 import 'package:hommie/widgets/appbar.dart';
 import 'package:hommie/widgets/custom_card.dart';
 import 'package:hommie/widgets/custom_text.dart';
@@ -74,6 +72,7 @@ class _AdminUserDetailsState extends State<AdminUserDetails> {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 30),
                                   child: CustomText(
+                                    
                                       text: "Email",
                                       size: 15,
                                       weight: FontWeight.w400,
@@ -168,11 +167,15 @@ class _AdminUserDetailsState extends State<AdminUserDetails> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 30),
-                                  child: CustomText(
-                                      text:  widget.userdata["Email"] ?? "N/A",
-                                      size: 15,
-                                      weight: FontWeight.w400,
-                                      color: myColor.textcolor),
+                                  child: SizedBox(
+                                     width: 100.h,
+                                    child: CustomText(
+                                      maxLines: 1,
+                                        text:  widget.userdata["Email"] ?? "N/A",
+                                        size: 15,
+                                        weight: FontWeight.w400,
+                                        color: myColor.textcolor),
+                                  ),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 30),

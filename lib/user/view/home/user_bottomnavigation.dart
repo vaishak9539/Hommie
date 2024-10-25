@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/img_path.dart'; // Make sure this has a valid path for icons
 import 'package:hommie/user/view/home/user_account/user_account.dart';
 import 'package:hommie/user/view/home/user_category/user_category.dart';
-import 'package:hommie/user/view/home/user_chat/user_chat_list.dart';
 import 'package:hommie/user/view/home/user_home.dart';
 import 'package:hommie/user/view/home/user_saved.dart';
 import 'package:iconly/iconly.dart';

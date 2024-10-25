@@ -10,7 +10,7 @@ class UserChatList extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    final List chat = [UserChat()];
+    // final List chat = [UserChat()];
     return Scaffold(
       backgroundColor: myColor.background,
       appBar: CustomAppBar(title: "Chats"),
@@ -21,7 +21,7 @@ class UserChatList extends StatelessWidget {
           child: CustomCard(
             child: ListTile(
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => chat[index],));
+                // Navigator.push(context, MaterialPageRoute(builder: (context) => chat[index],));
               },
               leading: CircleAvatar(
                 backgroundImage: AssetImage(icons[5]),

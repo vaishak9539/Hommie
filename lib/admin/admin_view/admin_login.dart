@@ -2,13 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/admin/admin_view/admin_bottomnav.dart';
-import 'package:hommie/admin/adminprovider/adminprovider.dart';
+import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/widgets/cu_inkwell_button.dart';
 import 'package:hommie/widgets/custom_text.dart';
 import 'package:hommie/widgets/custom_textfield.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminLogin extends StatefulWidget {

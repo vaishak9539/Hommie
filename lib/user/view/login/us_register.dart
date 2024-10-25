@@ -4,15 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hommie/model/utils/style/color.dart';
+import 'package:hommie/user/view/home/user_account/user_terms_conditions.dart';
+import 'package:hommie/user/view/home/user_bottomnavigation.dart';
 import 'package:hommie/widgets/cu_inkwell_button.dart';
 import 'package:hommie/widgets/custom_text.dart';
 import 'package:hommie/widgets/custom_textfield.dart';
 import 'package:hommie/widgets/dropdown.dart';
-import 'package:hommie/user/view/home/user_account/user_terms_conditions.dart';
-import 'package:hommie/user/view/home/user_bottomnavigation.dart';
-import 'package:hommie/user/view/login/user_Login.dart';
-import 'package:hommie/user/userprovider/user_provider_class.dart';
-import 'package:provider/provider.dart';
 
 class UserRegister extends StatefulWidget {
   const UserRegister({super.key});
@@ -74,6 +71,7 @@ class _UserRegisterState extends State<UserRegister> {
             "Terms": ischecked,
             "AuthUid": userAuthenticationUid,
             'CreatedAt': DateTime.now(),
+            "ImageUrl" : '',
           });
 
           Navigator.push(

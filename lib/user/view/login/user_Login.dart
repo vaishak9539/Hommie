@@ -50,6 +50,7 @@ class _UserLoginState extends State<UserLogin> {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           String? userId = prefs.getString("userUid");
           print("Shared Preference User ID: $userId");
+          
 
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return UserBottomNavigation();

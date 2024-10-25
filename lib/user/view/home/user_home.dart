@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +22,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String? _userId = FirebaseAuth.instance.currentUser?.uid;
+  var  currentUserId = FirebaseAuth.instance.currentUser?.uid;
   late Stream<QuerySnapshot> itemStream;
   late Stream<DocumentSnapshot> savedStream;
   final TextEditingController _searchController = TextEditingController();
@@ -32,13 +34,20 @@ class _HomeState extends State<Home> {
     super.initState();
     // Stream for all properties from the main 'items' collection
     itemStream = _firestore.collectionGroup("item_List").snapshots();
+    // _initializeUserId();
     // Stream for the current user's saved properties
-    savedStream = _firestore.collection('userSaved').doc(_userId).snapshots();
+    log(currentUserId.toString());
+    savedStream = _firestore.collection('userSaved').doc(currentUserId).snapshots();
+
+    
   }
 
+  
+
+
   Future<void> _toggleSaved(String itemId, bool currentStatus) async {
-    if (_userId == null) return;
-    await _firestore.collection('userSaved').doc(_userId).set({
+    if (currentUserId == null) return;
+    await _firestore.collection('userSaved').doc(currentUserId).set({
       itemId: !currentStatus,
     }, SetOptions(merge: true));
   }
@@ -135,7 +144,6 @@ class _HomeState extends State<Home> {
                             as Map<String, dynamic>;
                         var property = Property.fromFirestore(itemData);
                         bool isSaved = saved[property.id] ?? false;
-                        // var homeid=property.id;
 
                         return Stack(
                           children: [

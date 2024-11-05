@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -10,7 +13,6 @@ import 'package:hommie/widgets/cu_inkwell_button.dart';
 import 'package:hommie/widgets/cu_text_button.dart';
 import 'package:hommie/widgets/custom_text.dart';
 import 'package:hommie/widgets/custom_textfield.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AgencyLogin extends StatefulWidget {
   const AgencyLogin({super.key});
@@ -25,58 +27,48 @@ class _AgencyLoginState extends State<AgencyLogin> {
   final agencyEmailController = TextEditingController();
   bool agencySecureText = false;
 
-  Future<void> agencySignWithEmailAndPassword() async {
-    if (formkey.currentState!.validate()) {
-      String agencyEmail = agencyEmailController.text.trim();
-      String agencyPassword = agencyPasswordController.text.trim();
 
+Future<void> agencySignWithEmailAndPassword() async {
+  if (formkey.currentState!.validate()) {
+    String agencyEmail = agencyEmailController.text.trim();
+    String agencyPassword = agencyPasswordController.text.trim();
+
+    try {
+      // Use Firebase Authentication for signing in
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: agencyEmail, password: agencyPassword);
+
+      // Get the user ID after successful authentication
+      String authUid = userCredential.user!.uid;
+
+      // Now you can fetch additional agency data from Firestore if needed
       var querySnapshot = await FirebaseFirestore.instance
           .collection("Agencies")
-          .where("Email", isEqualTo: agencyEmail)
+          .where("AuthUid", isEqualTo: authUid)
           .limit(1)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
-        var agencyData = querySnapshot.docs.first.data();
-        var passwordFromDB = agencyData['Password'];
-        if (passwordFromDB != null && passwordFromDB == agencyPassword) {
-          var agencyUid = agencyData["AuthUid"];
-          if (agencyUid != null) {
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            await prefs.setString("agencyUid", agencyUid);
-          }
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          String? agId = prefs.getString("agencyUid");
-          print("Shared Preference Student ID: $agId");
+        log("agency login : $authUid");
 
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-            return AgencyBottomNav();
-          }));
-          Fluttertoast.showToast(
-            msg: 'Succesfully loggined',
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black54,
-            textColor: Colors.white,
-            fontSize: 16.0,
-          );
-        } else {
-          print('Incorrect password');
-          Fluttertoast.showToast(
-            msg: 'Incorrect Password',
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black54,
-            textColor: Colors.white,
-            fontSize: 16.0,
-          );
-        }
-      } else {
-        print('User not found');
+        // Navigate to the agency dashboard or home screen
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+          return AgencyBottomNav();
+        }));
+
         Fluttertoast.showToast(
-          msg: 'User not found',
+          msg: 'Successfully logged in',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black54,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      } else {
+        print('No matching agency found for this user');
+        Fluttertoast.showToast(
+          msg: 'No agency record found',
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -85,8 +77,21 @@ class _AgencyLoginState extends State<AgencyLogin> {
           fontSize: 16.0,
         );
       }
+    } catch (e) {
+      print('Authentication failed: $e');
+      Fluttertoast.showToast(
+        msg: 'Authentication failed: ${e.toString()}',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.black54,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     }
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

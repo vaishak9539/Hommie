@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously, avoid_print
 
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -24,83 +26,74 @@ class AgencyAccount extends StatefulWidget {
 }
 
 class _AgencyAccountState extends State<AgencyAccount> {
-
-void agencyDeleteAccount() {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text(
-          "Delete Your Account",
-          style: TextStyle(color: Colors.red),
-        ),
-        content: const Text(
-          "Are you sure you want to delete your account?",
-          style: TextStyle(color: Colors.black),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text(
-              "Cancel",
-              style: TextStyle(color: Colors.black),
-            ),
+  void agencyDeleteAccount() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text(
+            "Delete Your Account",
+            style: TextStyle(color: Colors.red),
           ),
-          TextButton(
-            onPressed: () async {
-              try {
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                String? agencyId = prefs.getString("agencyUid");
-            
-                if (agencyId != null) {
-                  // Delete account from Firestore
-                  await FirebaseFirestore.instance
-                      .collection("Agencies")
-                      .doc(agencyId)
-                      .delete();
-
-                  // Delete Firebase Authentication account
+          content: const Text(
+            "Are you sure you want to delete your account?",
+            style: TextStyle(color: Colors.black),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text(
+                "Cancel",
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                try {
                   User? user = FirebaseAuth.instance.currentUser;
+
                   if (user != null) {
-                   FirebaseFirestore.instance.collection('Agencies').doc(user.uid).delete();
-      await user.delete();// Deletes user from Firebase Authentication
+                    await FirebaseFirestore.instance
+                        .collection('Agencies')
+                        .doc(user.uid)
+                        .delete();
+                    await user.delete();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Account deleted successfully"),
+                      ),
+                    );
+
+                    // Navigate to the login screen
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AgencyLogin(),
+                      ),
+                      (route) => false,
+                    );
+                  } else {
+                    print("Agency ID is null");
                   }
-
-                  // Show success message
+                } catch (e) {
+                  print("Error deleting account: $e");
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Account deleted successfully"),
-                    ),
+                    SnackBar(content: Text("Error deleting account: $e")),
                   );
-
-                  // Remove agencyId from SharedPreferences
-                  await prefs.remove("agencyUid");
-
-                  // Navigate to the login screen
-                 Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => AgencyLogin(),), (route) => false,);
-                } else {
-                  print("Agency ID is null");
                 }
-              } catch (e) {
-                print("Error deleting account: $e");
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Error deleting account: $e")),
-                );
-              }
-            },
-            child: const Text(
-              "Delete",
-              style: TextStyle(color: Colors.red),
+              },
+              child: const Text(
+                "Delete",
+                style: TextStyle(color: Colors.red),
+              ),
             ),
-          ),
-        ],
-      );
-    },
-  );
-}
-
+          ],
+        );
+      },
+    );
+  }
 
   void agencyLogoutdialogbox() {
     showDialog(
@@ -123,22 +116,24 @@ void agencyDeleteAccount() {
             TextButton(
                 onPressed: () async {
                   try {
-                    SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    await prefs.remove("agencyUid");
+                    User? user = FirebaseAuth.instance.currentUser;
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Logged out successfully")),
-                    );
+                    if (user != null) {
+                      log(user.uid);
 
-                    Navigator.pop(context);
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AgencyLogin(),
-                      ),
-                      (route) => false,
-                    );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Logged out successfully")),
+                      );
+
+                      Navigator.pop(context);
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AgencyLogin(),
+                        ),
+                        (route) => false,
+                      );
+                    }
                   } catch (e) {
                     print("Error logging out: $e");
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -182,11 +177,8 @@ void agencyDeleteAccount() {
 
   Future<void> _getAgencyDetails() async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      setState(() {
-        agencyId = prefs.getString("agencyUid");
-      });
-
+      final user = FirebaseAuth.instance.currentUser;
+      agencyId = user!.uid;
       if (agencyId != null) {
         DocumentSnapshot agencySnapshot = await FirebaseFirestore.instance
             .collection("Agencies")
@@ -249,12 +241,12 @@ void agencyDeleteAccount() {
               children: [
                 CircleAvatar(
                   radius: 40,
-                  backgroundImage:
-                      (agencyImageUrl != null && agencyImageUrl!.isNotEmpty)
-                          ? NetworkImage(agencyImageUrl!) as ImageProvider
-                          : AssetImage(
-                                          "assets/images/User 1.png") // Fallback to asset image
-                                      as ImageProvider<Object>,
+                  backgroundImage: (agencyImageUrl != null &&
+                          agencyImageUrl!.isNotEmpty)
+                      ? NetworkImage(agencyImageUrl!) as ImageProvider
+                      : AssetImage(
+                              "assets/images/User 1.png") // Fallback to asset image
+                          as ImageProvider<Object>,
                   // child: (agencyImageUrl == null || agencyImageUrl!.isEmpty)
                   //     ? const Icon(Icons.person, size: 50)
                   //     : null,

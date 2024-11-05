@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:carousel_slider/carousel_slider.dart';
@@ -23,6 +24,7 @@ class AgencyAddHomeDetails extends StatefulWidget {
 }
 
 class _AgencyAddHomeDetailsState extends State<AgencyAddHomeDetails> {
+  var agencyId;
   final formKey = GlobalKey<FormState>();
 
   List<String> furnishingList = ["Furnished", "Semi-Furnished", "Unfurnished"];
@@ -42,18 +44,19 @@ class _AgencyAddHomeDetailsState extends State<AgencyAddHomeDetails> {
   final setPriceController = TextEditingController();
   final descriptionController = TextEditingController();
 
-  List<File> _images = [];
+  final List<File> _images = [];
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
     typController.text = widget.typ;
+    _fetchAgencyId();
   }
 
   Future<void> _pickImage() async {
     final pickedFiles = await ImagePicker().pickMultiImage();
-    if (pickedFiles != null && pickedFiles.isNotEmpty) {
+    if (pickedFiles.isNotEmpty) {
       setState(() {
         _images.addAll(
             pickedFiles.map((pickedFile) => File(pickedFile.path)).toList());
@@ -74,23 +77,51 @@ class _AgencyAddHomeDetailsState extends State<AgencyAddHomeDetails> {
     return imageUrls;
   }
 
-  Future<void> _saveItem() async {
+  Future<void> _fetchAgencyId() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        // Fetch the agency document associated with this user
+        final agencyDoc = await FirebaseFirestore.instance
+            .collection('Agencies')
+            .where('AuthUid', isEqualTo: user.uid).limit(1)
+            .get();
+
+        if (agencyDoc.docs.isNotEmpty) {
+          setState(() {
+            agencyId = agencyDoc.docs.first.id;
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No agency found for this user')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error fetching agency details: $e')),
+        );
+      }
+    }
+  }
+
+ Future<void> _saveItem() async {
     if (formKey.currentState!.validate()) {
+      if (agencyId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Agency ID not found. Please try again.')),
+        );
+        return;
+      }
+
       setState(() {
         isLoading = true;
       });
 
       try {
-        final user = FirebaseAuth.instance.currentUser;
-        if (user == null) {
-          throw 'User not authenticated';
-        }
-        String agencyId = user.uid;
-          print(agencyId);
         List<String> imageUrls = await _uploadImages();
 
         Property newProperty = Property(
-          agencyId: agencyId,
+          agencyId: agencyId!, // Use the fetched agency ID
           typ: widget.typ,
           name: nameController.text,
           bedroom: bedroomController.text,
@@ -111,7 +142,7 @@ class _AgencyAddHomeDetailsState extends State<AgencyAddHomeDetails> {
 
         DocumentReference docRef = await FirebaseFirestore.instance
             .collection('items')
-            .doc(agencyId)
+            .doc(agencyId) // Use the fetched agency ID
             .collection('item_List')
             .add(newProperty.toMap());
 
@@ -123,10 +154,10 @@ class _AgencyAddHomeDetailsState extends State<AgencyAddHomeDetails> {
         });
           
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Property added successfully!')),
+          const SnackBar(content: Text('Property added successfully!')),
         );
 
-        Navigator.push(context, MaterialPageRoute(builder: (context) => AgencyAddedSuccessfully(),));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const AgencyAddedSuccessfully()));
       } catch (e) {
         setState(() {
           isLoading = false;

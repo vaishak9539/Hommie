@@ -21,7 +21,7 @@ class _UserBottomNavigationState extends State<UserBottomNavigation> {
   @override
   Widget build(BuildContext context) {
     List<Widget> pages = [
-      const Home(),
+       Home(),
       const UserCategory(),
       const UserSaved(),
       const UserAccount(),

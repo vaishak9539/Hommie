@@ -1,402 +1,136 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:hommie/model/utils/style/color.dart';
-import 'package:hommie/widgets/custom_textfield.dart';
-
-class UserChat extends StatefulWidget {
-  final  agencyId;
-  final String propertyId; // New property ID to distinguish between properties
-
-  const UserChat({super.key, required this.agencyId, required this.propertyId});
-
-  @override
-  State<UserChat> createState() => _UserChatState();
-}
-
-class _UserChatState extends State<UserChat> {
-  final TextEditingController _messageController = TextEditingController();
-  final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-
-  String? agencyName;
-  String? propertyName;
-  String? userName;
-
-
-
-
-
-
-
-
-
-
-
-Future<void> fetchAgencyAndPropertyNames() async {
-  try {
-    // Fetch agency name
-    DocumentSnapshot agencyDoc =
-        await _fireStore.collection('Agencies').doc(widget.agencyId).get();
-    if (agencyDoc.exists) {
-      setState(() {
-        agencyName = agencyDoc.get('Name');
-        print("Agency Name : $agencyName");
-      });
-    }
-
-    // Fetch property name directly from the agency's item_List
-    DocumentSnapshot propertyDoc = await _fireStore
-        .collection('items')
-        .doc(widget.agencyId)
-        .collection('item_List')
-        .doc(widget.propertyId)
-        .get();
-
-    if (propertyDoc.exists) {
-      setState(() {
-       
-        propertyName = propertyDoc.get("name");
-         print(widget.agencyId);
-        print(widget.propertyId);
-        print(propertyName);
-      });
-    } else {
-      //  print(widget.agencyId);
-      //   print(widget.propertyId);
-      print("Property not found");
-    }
-
-    // Fetch user name
-    String currentUserId = _firebaseAuth.currentUser!.uid;
-    print(currentUserId);
-    DocumentSnapshot userDoc =
-        await _fireStore.collection('Users').doc(currentUserId).get();
-    if (userDoc.exists) {
-      setState(() {
-        userName = userDoc.get('name');
-      });
-    }
-  } catch (e) {
-    print("Error fetching data: $e");
-  }
-}
-
-  @override
-  void initState() {
-    super.initState();
-    
-    fetchAgencyAndPropertyNames();
-  }
-
-  // Send message to the Firestore
-Future<void> sendMessage() async {
-  if (_messageController.text.isEmpty) return;
-
-  try {
-    // 1. Get current user
-    final currentUser = _firebaseAuth.currentUser;
-    if (currentUser == null) {
-      print("Error: No user logged in");
-      return;
-    }
-
-    // 2. Get required user data
-    final currentUserId = currentUser.uid;
-    print(currentUser);
-    print(currentUserId);
-    final currentUserEmail = currentUser.email ?? '';
-
-    // 3. Fetch user name if not already available
-    String? userNameToUse = userName;
-    if (userNameToUse == null) {
-      final userDoc = await _fireStore.collection('Users').doc(currentUserId).get();
-      if (userDoc.exists) {
-        userNameToUse = userDoc.get('name');
-      }
-    }
-
-    // 4. Fetch property name if not already available
-    String? propertyNameToUse = propertyName;
-    if (propertyNameToUse == null) {
-      // First try to get from Agencies collection
-      final propertyDoc = await _fireStore
-          .collection('Agencies')
-          .doc(widget.agencyId)
-          .collection('item_List')
-          .doc(widget.propertyId)
-          .get();
-
-      if (propertyDoc.exists) {
-        propertyNameToUse = propertyDoc.get('name');
-      }
-    }
-
-    // 5. Create chat room ID
-    final chatRoomId = "${widget.agencyId}_${widget.propertyId}";
-
-    // 6. Create message data
-    final messageData = {
-      'senderId': currentUserId,
-      'senderEmail': currentUserEmail,
-      'senderName': userNameToUse ?? 'Unknown User',
-      'receiverId': widget.agencyId,
-      'message': _messageController.text.trim(),
-      'timestamp': Timestamp.now(),
-      'propertyId': widget.propertyId,
-      'propertyName': propertyNameToUse ?? 'Unknown Property',
-    };
-
-    // 7. Save to Firestore
-    await _fireStore
-        .collection("ChatRooms")
-        .doc(chatRoomId)
-        .collection("Messages")
-        .add(messageData);
-
-    // 8. Clear the input field
-    _messageController.clear();
-
-  } catch (e) {
-    print("Error sending message: $e");
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Failed to send message. Please try again.')),
-    );
-  }
-}
-  // Fetch messages between user and agency for a specific property
-  Stream<QuerySnapshot> getMessages() {
-    String chatRoomId = "${widget.agencyId}_${widget.propertyId}";
-
-    return _fireStore
-        .collection("ChatRooms")
-        .doc(chatRoomId)
-        .collection("Messages")
-        .orderBy("timestamp", descending: false)
-        .snapshots();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(agencyName != null && propertyName != null
-            ? '$agencyName - $propertyName'
-            : 'Property Chat'),
-        backgroundColor: myColor.background,
-      ),
-      body: Column(
-        children: [
-          Expanded(child: _buildMessageList()),
-          _buildMessageInput(),
-        ],
-      ),
-    );
-  }
-
-  // Message list UI
-  Widget _buildMessageList() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: getMessages(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(child: Text("Error: ${snapshot.error}"));
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        }
-
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return Center(child: Text("No messages yet."));
-        }
-
-        return ListView(
-          children: snapshot.data!.docs
-              .map((document) => _buildMessageItem(document))
-              .toList(),
-        );
-      },
-    );
-  }
-
-  // Individual message item UI
-  Widget _buildMessageItem(DocumentSnapshot document) {
-    Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-    bool isCurrentUser = data['senderId'] == _firebaseAuth.currentUser!.uid;
-
-    return Align(
-      alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-        padding: EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: isCurrentUser ? Colors.blue[100] : Colors.grey[300],
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          crossAxisAlignment:
-              isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-          children: [
-            Text(
-              isCurrentUser ? "You" : data['senderName'] ?? 'Agency',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, color: myColor.textcolor),
-            ),
-            SizedBox(height: 5),
-            Text(data['message']),
-            if (data['propertyName'] != null) ...[
-              SizedBox(height: 5),
-              Text('Property: ${data['propertyName']}', style: TextStyle(color: Colors.grey)),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Message input UI
-  Widget _buildMessageInput() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: CustomTextField(
-              borderColor: myColor.textcolor,
-              controller: _messageController,
-              textColor: Colors.black,
-              hintText: 'Enter your message',
-            ),
-          ),
-          IconButton(
-            onPressed: sendMessage,
-            icon: Icon(Icons.send, color: myColor.textcolor),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-
-
-
-
-
-  // String? agencyName;
-  // String? propertyName;
-
-  // // Fetch agency name and property name from Firestore
-  // Future<void> fetchAgencyAndPropertyNames() async {
-  //   // Fetch agency name
-  //   DocumentSnapshot agencyDoc = await _fireStore
-  //       .collection('Agencies')
-  //       .doc(widget.agencyId)
-  //       .get();
-
-  //   if (agencyDoc.exists) {
-  //     setState(() {
-  //       agencyName = agencyDoc.get("Name");
-  //     });
-  //   }
-
-  //   // Fetch property name
-  //   DocumentSnapshot propertyDoc = await _fireStore
-  //       .collection('Properties') // Assuming you have a collection for properties
-  //       .doc(widget.propertyId)
-  //       .get();
-
-  //   if (propertyDoc.exists) {
-  //     setState(() {
-  //       propertyName = propertyDoc.get("Name");
-  //       print(propertyName);
-  //     });
-  //   }
-  // }
-
-
-// *******************************************************************************
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter/material.dart';
 // import 'package:hommie/model/utils/style/color.dart';
 // import 'package:hommie/widgets/custom_textfield.dart';
 
-// class UserChat extends StatefulWidget {
-//   final  agencyId;
+// class UserAgencyChat extends StatefulWidget {
+//   var agencyId;
+//   var propertyId;
+//   final bool isUserInitiating; // Determines who initiated the chat
 
-//   const UserChat({super.key, required this.agencyId,});
+//   UserAgencyChat({
+//     super.key,
+//     required this.agencyId,
+//     required this.propertyId,
+//     this.isUserInitiating = true,
+//   });
 
 //   @override
-//   State<UserChat> createState() => _UserChatState();
+//   State<UserAgencyChat> createState() => _UserAgencyChatState();
 // }
 
-// class _UserChatState extends State<UserChat> {
+// class _UserAgencyChatState extends State<UserAgencyChat> {
 //   final TextEditingController _messageController = TextEditingController();
 //   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 //   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-//   String? agencyName;
-
-//   // Fetch agency name from Firestore
-//   Future<void> fetchAgencyName() async {
-//     DocumentSnapshot agencyDoc = await _fireStore
-//         .collection('Agencies')
-//         .doc(widget.agencyId)
-//         .get();
-
-//     if (agencyDoc.exists) {
-//       setState(() {
-//         agencyName = agencyDoc.get("Name");
-//       });
-//     }
-//   }
+//   String? senderName;
+//   String? receiverName;
+//   String? propertyName;
 
 //   @override
 //   void initState() {
 //     super.initState();
-//     fetchAgencyName();
+//     _fetchChatParticipantsInfo();
 //   }
 
-//   // Send message to the Firestore
-//   Future<void> sendMessage() async {
-//     if (_messageController.text.isNotEmpty) {
+//   // Fetch information about chat participants and property
+//   Future<void> _fetchChatParticipantsInfo() async {
+//     try {
+//       // Fetch current user's information
 //       String currentUserId = _firebaseAuth.currentUser!.uid;
-//       String currentUserEmail = _firebaseAuth.currentUser!.email ?? '';
-//       String message = _messageController.text.trim();
+//       DocumentSnapshot userDoc =
+//           await _fireStore.collection('Users').doc(currentUserId).get();
 
-//       Timestamp timestamp = Timestamp.now();
-//       List<String> ids = [currentUserId, widget.agencyId];
-//       ids.sort();
-//       String chatRoomId = ids.join("_");
+//       // Fetch agency information
+//       DocumentSnapshot agencyDoc =
+//           await _fireStore.collection('Agencies').doc(widget.agencyId).get();
 
-//       // Create message map
-//       Map<String, dynamic> messageData = {
-//         'senderId': currentUserId,
-//         'senderEmail': currentUserEmail,
+//       // Fetch property information
+//       DocumentSnapshot propertyDoc = await _fireStore
+//           .collection('items')
+//           .doc(widget.agencyId)
+//           .collection('item_List')
+//           .doc(widget.propertyId)
+//           .get();
+
+//       setState(() {
+//         // Set sender name based on who initiated the chat
+//         senderName = widget.isUserInitiating
+//             ? userDoc.get('Name')
+//             : agencyDoc.get('Name');
+
+//         // Set receiver name based on who initiated the chat
+//         receiverName = widget.isUserInitiating
+//             ? agencyDoc.get('Name')
+//             : userDoc.get('Name');
+
+//         // Set property name
+//         propertyName = propertyDoc.get('name');
+//       });
+//     } catch (e) {
+//       print("Error fetching chat participant info: $e");
+//     }
+//   }
+
+//   // Generate unique chat room ID
+//   String _generateChatRoomId() {
+//     String currentUserId = _firebaseAuth.currentUser!.uid;
+//     List<String> ids = [currentUserId, widget.agencyId];
+//     ids.sort();
+//     return "${ids[0]}_${ids[1]}_${widget.propertyId}";
+//   }
+
+//   // Send message to Firestore
+//   Future<void> _sendMessage() async {
+//     if (_messageController.text.isEmpty) return;
+
+//     try {
+//       final currentUser = _firebaseAuth.currentUser;
+//       if (currentUser == null) {
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(content: Text('Please log in to send messages')),
+//         );
+//         return;
+//       }
+
+//       // Prepare message data
+//       final messageData = {
+//         'senderId': currentUser.uid,
+//         'senderName': senderName ?? 'Unknown Sender',
 //         'receiverId': widget.agencyId,
-//         'message': message,
-//         'timestamp': timestamp,
+//         'receiverName': receiverName ?? 'Unknown Receiver',
+//         'message': _messageController.text.trim(),
+//         'timestamp': Timestamp.now(),
+//         'propertyId': widget.propertyId,
+//         'propertyName': propertyName ?? 'Unknown Property',
+//         'isUserMessage': widget.isUserInitiating,
 //       };
 
-//       // Save message in Firestore
+//       // Generate unique chat room ID
+//       final chatRoomId = _generateChatRoomId();
+
+//       // Save message to Firestore
 //       await _fireStore
 //           .collection("ChatRooms")
 //           .doc(chatRoomId)
 //           .collection("Messages")
 //           .add(messageData);
 
+//       // Clear message input
 //       _messageController.clear();
+//     } catch (e) {
+//       print("Error sending message: $e");
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Failed to send message. Please try again.')),
+//       );
 //     }
 //   }
 
-//   // Fetch messages between user and agency
-//   Stream<QuerySnapshot> getMessages() {
-//     String currentUserId = _firebaseAuth.currentUser!.uid;
-//     List<String> ids = [currentUserId, widget.agencyId];
-//     ids.sort();
-//     String chatRoomId = ids.join("_");
+//   // Fetch messages for this specific chat room
+//   Stream<QuerySnapshot> _getMessages() {
+//     final chatRoomId = _generateChatRoomId();
 
 //     return _fireStore
 //         .collection("ChatRooms")
@@ -410,8 +144,13 @@ Future<void> sendMessage() async {
 //   Widget build(BuildContext context) {
 //     return Scaffold(
 //       appBar: AppBar(
-//         title: Text(agencyName ?? 'Agency Chat'),
-//         backgroundColor: Colors.white,
+//         title: Text(
+//           receiverName != null && propertyName != null
+//               ? '$receiverName - $propertyName'
+//               : 'Property Chat',
+//           style: TextStyle(color: myColor.textcolor),
+//         ),
+//         backgroundColor: myColor.background,
 //       ),
 //       body: Column(
 //         children: [
@@ -422,10 +161,10 @@ Future<void> sendMessage() async {
 //     );
 //   }
 
-//   // Message list UI
+//   // Build message list
 //   Widget _buildMessageList() {
 //     return StreamBuilder<QuerySnapshot>(
-//       stream: getMessages(),
+//       stream: _getMessages(),
 //       builder: (context, snapshot) {
 //         if (snapshot.hasError) {
 //           return Center(child: Text("Error: ${snapshot.error}"));
@@ -448,9 +187,11 @@ Future<void> sendMessage() async {
 //     );
 //   }
 
-//   // Individual message item UI
+//   // Build individual message item
 //   Widget _buildMessageItem(DocumentSnapshot document) {
 //     Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+
+//     // Determine if the message is from the current user
 //     bool isCurrentUser = data['senderId'] == _firebaseAuth.currentUser!.uid;
 
 //     return Align(
@@ -467,19 +208,22 @@ Future<void> sendMessage() async {
 //               isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
 //           children: [
 //             Text(
-//               isCurrentUser ? "You" : agencyName ?? 'Agency',
+//               isCurrentUser ? "You" : data['senderName'],
 //               style: TextStyle(
 //                   fontWeight: FontWeight.bold, color: myColor.textcolor),
 //             ),
 //             SizedBox(height: 5),
 //             Text(data['message']),
+//             if (data['propertyName'] != null) ...[
+//               SizedBox(height: 5),
+//             ],
 //           ],
 //         ),
 //       ),
 //     );
 //   }
 
-//   // Message input UI
+//   // Build message input field
 //   Widget _buildMessageInput() {
 //     return Padding(
 //       padding: const EdgeInsets.all(8.0),
@@ -494,7 +238,7 @@ Future<void> sendMessage() async {
 //             ),
 //           ),
 //           IconButton(
-//             onPressed: sendMessage,
+//             onPressed: _sendMessage,
 //             icon: Icon(Icons.send, color: myColor.textcolor),
 //           ),
 //         ],
@@ -503,144 +247,250 @@ Future<void> sendMessage() async {
 //   }
 // }
 
+// *****************************************************************************************************************
 
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:hommie/model/utils/style/color.dart';
+import 'package:hommie/widgets/custom_textfield.dart';
 
+class UserAgencyChat extends StatefulWidget {
+  var agencyId;
+  final String propertyId;
+  final bool isUserInitiating;
 
+  UserAgencyChat({
+    super.key,
+    required this.agencyId,
+    required this.propertyId,
+    this.isUserInitiating = true,
+  });
 
+  @override
+  State<UserAgencyChat> createState() => _UserAgencyChatState();
+}
 
+class _UserAgencyChatState extends State<UserAgencyChat> {
+  final TextEditingController _messageController = TextEditingController();
+  final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
+  String? senderName;
+  String? receiverName;
+  String? propertyName;
 
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:flutter/material.dart';
-// import 'package:hommie/model/utils/style/color.dart';
-// import 'package:hommie/user/chat/chat_service.dart';
-// import 'package:hommie/widgets/custom_textfield.dart';
+  @override
+  void initState() {
+    super.initState();
+    _fetchChatParticipantsInfo();
+  }
 
-// class UserChat extends StatefulWidget {
-//   final  agencyid;
+  Future<void> _fetchChatParticipantsInfo() async {
+    try {
+      String currentUserId = _firebaseAuth.currentUser!.uid;
+      DocumentSnapshot userDoc = await _fireStore
+          .collection('Users')
+          .doc(currentUserId)
+          .get();
 
-//   const UserChat({super.key, required this.agencyid});
+      DocumentSnapshot agencyDoc = await _fireStore
+          .collection('Agencies')
+          .doc(widget.agencyId)
+          .get();
 
-//   @override
-//   State<UserChat> createState() => _UserChatState();
-// }
+      DocumentSnapshot propertyDoc = await _fireStore
+          .collection('items')
+          .doc(widget.agencyId)
+          .collection('item_List')
+          .doc(widget.propertyId)
+          .get();
 
-// class _UserChatState extends State<UserChat> {
-//   String? agencyName;
-//   final _messageController = TextEditingController();
-//   final ChatService _chatService = ChatService();
-//   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+      setState(() {
+        senderName = widget.isUserInitiating 
+            ? userDoc.get('Name') 
+            : agencyDoc.get('Name');
+        
+        receiverName = widget.isUserInitiating 
+            ? agencyDoc.get('Name') 
+            : userDoc.get('Name');
+        
+        propertyName = propertyDoc.get('name');
+      });
+    } catch (e) {
+      print("Error fetching chat participant info: $e");
+    }
+  }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   fetchAgencyName();
-  // }
+  String _generateChatRoomId() {
+    String currentUserId = _firebaseAuth.currentUser!.uid;
+    List<String> ids = [currentUserId, widget.agencyId];
+    ids.sort();
+    return "${ids[0]}_${ids[1]}";
+  }
 
-  // Future<void> fetchAgencyName() async {
-  //   DocumentSnapshot agencyDoc = await FirebaseFirestore.instance
-  //       .collection('Agencies')
-  //       .doc(widget.agencyid)
-  //       .get();
+  Future<void> _sendMessage() async {
+    if (_messageController.text.isEmpty) return;
 
-  //   if (agencyDoc.exists) {
-  //     setState(() {
-  //       agencyName = agencyDoc.get("Name");
-  //     });
-  //   }
-  // }
+    try {
+      final currentUser = _firebaseAuth.currentUser;
+      if (currentUser == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please log in to send messages')),
+        );
+        return;
+      }
 
-//   void sendMessage() async {
-//     if (_messageController.text.isNotEmpty) {
-//       await _chatService.sendMessage(widget.agencyid, _messageController.text);
-//       _messageController.clear();
-//     }
-//   }
+      final now = Timestamp.now();
+      final formattedTime = DateFormat('HH:mm a').format(now.toDate());
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text(agencyName ?? "Agency Chat"),
-//       ),
-//       body: Column(
-//         children: [
-//           Expanded(child: _buildMessageList()),
+      final messageData = {
+        'senderId': currentUser.uid,
+        'senderName': senderName ?? 'Unknown Sender',
+        'receiverId': widget.agencyId,
+        'receiverName': receiverName ?? 'Unknown Receiver',
+        'message': _messageController.text.trim(),
+        'timestamp': now,
+        'formattedTime': formattedTime,
+        'propertyId': widget.propertyId,
+        'propertyName': propertyName ?? 'Unknown Property',
+        'participants': [currentUser.uid, widget.agencyId],
+        'isUserMessage': widget.isUserInitiating,
+      };
 
-//           // User input
-//           _buildMessageInput(),
-//         ],
-//       ),
-//     );
-//   }
+      final chatRoomId = _generateChatRoomId();
 
-//   Widget _buildMessageList() {
-//     return StreamBuilder(
-//       stream: _chatService.getMessages(_firebaseAuth.currentUser!.uid, widget.agencyid),
-//       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-//         if (snapshot.hasError) {
-//           return Center(child: Text("Error: ${snapshot.error}"));
-//         }
-//         if (snapshot.connectionState == ConnectionState.waiting) {
-//           return Center(child: CircularProgressIndicator());
-//         }
-//         return ListView(
-//           children: snapshot.data!.docs.map((document) => _buildMessageItem(document)).toList(),
-//         );
-//       },
-//     );
-//   }
+      await _fireStore
+          .collection("ChatRooms")
+          .doc(chatRoomId)
+          .collection("Messages")
+          .add(messageData);
 
-//   Widget _buildMessageItem(DocumentSnapshot document) {
-//     Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-//     bool isCurrentUser = data['senderId'] == _firebaseAuth.currentUser!.uid;
+      _messageController.clear();
+    } catch (e) {
+      print("Error sending message: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to send message. Please try again.')),
+      );
+    }
+  }
+
+  Stream<QuerySnapshot> _getMessages() {
+    final chatRoomId = _generateChatRoomId();
+
+    return _fireStore
+        .collection("ChatRooms")
+        .doc(chatRoomId)
+        .collection("Messages")
+        .orderBy("timestamp", descending: false)
+        .snapshots();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          receiverName != null && propertyName != null
+              ? '$receiverName - $propertyName'
+              : 'Property Chat',
+          style: TextStyle(color: myColor.textcolor),
+        ),
+        backgroundColor: myColor.background,
+      ),
+      body: Column(
+        children: [
+          Expanded(child: _buildMessageList()),
+          _buildMessageInput(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMessageList() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _getMessages(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: Text("Error: ${snapshot.error}"));
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return Center(child: Text("No messages yet."));
+        }
+
+        return ListView(
+          children: snapshot.data!.docs
+              .map((document) => _buildMessageItem(document))
+              .toList(),
+        );
+      },
+    );
+  }
+
+  Widget _buildMessageItem(DocumentSnapshot document) {
+    Map<String, dynamic> data = document.data() as Map<String, dynamic>;
     
+    bool isCurrentUser = data['senderId'] == _firebaseAuth.currentUser!.uid;
 
-//     var alignment = isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
-//     var messageColor = isCurrentUser ? Colors.blue[100] : Colors.grey[300];
+    return Align(
+      alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: isCurrentUser ? Colors.blue[100] : Colors.grey[300],
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: 
+            isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          children: [
+            Text(
+              isCurrentUser ? "You" : data['senderName'],
+              style: TextStyle(
+                fontWeight: FontWeight.bold, 
+                color: myColor.textcolor
+              ),
+            ),
+            SizedBox(height: 5),
+            Text(data['message']),
+            SizedBox(height: 5),
+            Text(
+              data['formattedTime'] ?? '',
+              style: TextStyle(color: Colors.grey, fontSize: 10),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-//     return Container(
-//       alignment: alignment,
-//       padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-//       child: Container(
-//         padding: EdgeInsets.all(10),
-//         decoration: BoxDecoration(
-//           color: messageColor,
-//           borderRadius: BorderRadius.circular(10),
-//         ),
-//         child: Column(
-//           crossAxisAlignment: isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-//           children: [
-//             Text(data['message']),
-//             SizedBox(height: 5),
-//             Text(
-//               data['senderEmail'],
-//               style: TextStyle(fontSize: 12, color: Colors.grey),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-
-//   // Build message input field
-//   Widget _buildMessageInput() {
-//     return Row(
-//       children: [
-//         Expanded(
-//           child: CustomTextField(
-//             borderColor: myColor.textcolor,
-//             controller: _messageController,
-//             textColor: Colors.black,
-//           ),
-//         ),
-//         IconButton(
-//           onPressed: sendMessage,
-//           icon: Icon(Icons.arrow_upward),
-//         ),
-//       ],
-//     );
-//   }
-// }
+  Widget _buildMessageInput() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: CustomTextField(
+              borderColor: myColor.textcolor,
+              controller: _messageController,
+              textColor: Colors.black,
+              hintText: 'Enter your message',
+            ),
+          ),
+          IconButton(
+            onPressed: _sendMessage,
+            icon: Icon(Icons.send, color: myColor.textcolor),
+          ),
+        ],
+      ),
+    );
+  }
+}

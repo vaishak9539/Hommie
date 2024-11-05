@@ -188,6 +188,8 @@
 // }
 
 
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -210,35 +212,40 @@ class AgencyItemList extends StatefulWidget {
 }
 
 class _AgencyItemListState extends State<AgencyItemList> {
-  String? currenagencyId;
-  bool isLoading = true;
+  String? agencyId;
 
   @override
   void initState() {
     super.initState();
-    _getAgencyId();
+    _fetchUserId();
   }
 
-  Future<void> _getAgencyId() async {
-    // Fetch the currently logged-in user
-    // final agency = FirebaseAuth.instance.currentUser;
-    
-    // print( "Firebase agencyUid :  $agency");
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-          String? agId = prefs.getString("agencyUid");
-          print("Shared Preference agencyUid: $agId");
-    
-    if (agId != null ) {
-      setState(() {
-        currenagencyId = agId;
-        isLoading = false;
-        print("Agency ID fetched: $currenagencyId"); // Debugging purpose
-      });
-    } else {
-      print("No agency logged in"); // Debugging
-      setState(() {
-        isLoading = false;
-      });
+    Future<void> _fetchUserId() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      log("Home ${user.uid}");
+      try {
+        // Fetch the agency document associated with this user
+        final userDoc = await FirebaseFirestore.instance
+            .collection('Agencies')
+            .where('AuthUid', isEqualTo: user.uid).limit(1)
+            .get();
+
+        if (userDoc.docs.isNotEmpty) {
+          setState(() {
+            agencyId = userDoc.docs.first.id;
+            log("Home $agencyId");
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No agency found for this user')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error fetching agency details: $e')),
+        );
+      }
     }
   }
 
@@ -247,7 +254,7 @@ class _AgencyItemListState extends State<AgencyItemList> {
     try {
       await FirebaseFirestore.instance
           .collection('items')
-          .doc(currenagencyId) // Make sure it uses the correct agency's items
+          .doc(agencyId) // Make sure it uses the correct agency's items
           .collection('item_List')
           .doc(documentId)
           .delete();
@@ -264,14 +271,11 @@ class _AgencyItemListState extends State<AgencyItemList> {
         title: "Home",
         automaticallyImplyLeading: true,
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator()) // Loading until user ID is fetched
-          : currenagencyId == null
-              ? const Center(child: Text("Unable to fetch agency ID")) // Fallback for no agencyId
-              : StreamBuilder(
+      body: 
+               StreamBuilder(
                   stream: FirebaseFirestore.instance
                       .collection('items')
-                      .doc(currenagencyId)
+                      .doc(agencyId)
                       .collection("item_List")
                       .snapshots(),
                   builder: (context, snapshot) {
@@ -284,7 +288,7 @@ class _AgencyItemListState extends State<AgencyItemList> {
                     }
 
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      print("No items found for agency ID: $currenagencyId"); // Debugging
+                      log("No items found for agency ID: $agencyId"); // Debugging
                       return const Center(child: Text("No items found"));
                     }
 
@@ -389,6 +393,7 @@ class _AgencyItemListState extends State<AgencyItemList> {
                     );
                   },
                 ),
+                
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 15),
         child: FloatingActionButton(

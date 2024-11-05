@@ -5,13 +5,14 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/model/utils/style/color.dart';
+import 'package:hommie/user/view/home/filterd_property.dart';
+import 'package:hommie/user/view/home/model/filtermodel.dart';
 import 'package:hommie/user/view/home/user_category/user_property_view.dart';
 import 'package:hommie/user/view/home/user_category/user_view_home.dart';
+import 'package:hommie/user/view/home/user_chat/user_chat_list.dart';
 import 'package:hommie/widgets/appbar.dart';
 import 'package:hommie/widgets/custom_text.dart';
-import 'package:hommie/widgets/custom_textfield.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -22,35 +23,55 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  var  currentUserId = FirebaseAuth.instance.currentUser?.uid;
-  late Stream<QuerySnapshot> itemStream;
-  late Stream<DocumentSnapshot> savedStream;
-  final TextEditingController _searchController = TextEditingController();
+  // final currentUserId;
+  var userId;
+  Stream<QuerySnapshot>? itemStream ;
+   Stream<DocumentSnapshot>? savedStream;
+    String? _selectedType;
+  RangeValues _priceRange = RangeValues(0, 1000000);
+  // final TextEditingController _searchController = TextEditingController();
+  PropertyFilter currentFilter = PropertyFilter();
 
- 
+  Future<void> _fetchUserId() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        // Fetch the agency document associated with this user
+        final userDoc = await FirebaseFirestore.instance
+            .collection('Users')
+            .where('AuthUid', isEqualTo: user.uid).limit(1)
+            .get();
+
+        if (userDoc.docs.isNotEmpty) {
+          setState(() {
+            userId = userDoc.docs.first.id;
+             savedStream = _firestore.collection('userSaved').doc(userId).snapshots();
+            log("Home $userId");
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No agency found for this user')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error fetching agency details: $e')),
+        );
+      }
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    // Stream for all properties from the main 'items' collection
-    itemStream = _firestore.collectionGroup("item_List").snapshots();
-    // _initializeUserId();
-    // Stream for the current user's saved properties
-    log(currentUserId.toString());
-    savedStream = _firestore.collection('userSaved').doc(currentUserId).snapshots();
-
-    
+ itemStream = _firestore.collectionGroup("item_List").snapshots();
+   _fetchUserId();
+     
+   
   }
 
-  
 
 
-  Future<void> _toggleSaved(String itemId, bool currentStatus) async {
-    if (currentUserId == null) return;
-    await _firestore.collection('userSaved').doc(currentUserId).set({
-      itemId: !currentStatus,
-    }, SetOptions(merge: true));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,24 +80,29 @@ class _HomeState extends State<Home> {
       appBar: CustomAppBar(
         automaticallyImplyLeading: false,
         title: "Home",
-        actions: [],
+        actions: [
+           Builder(
+            builder: (context) => IconButton(
+              icon: Icon(Icons.chat),
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: IconButton(onPressed: () {
+              return _showFilterDialog(context);
+            }, icon: Icon(Icons.filter_list)),
+          )
+        ],
+      ),
+      endDrawer: Drawer(
+        width: double.infinity,
+        child: ChatListScreen()
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
- 
-          SizedBox(
-            height: 33.h,
-            child: CustomTextField(
-              controller: _searchController,
-              contentPadding: EdgeInsets.all(10),
-              prefixIcon: Icon(Icons.search_rounded),
-              fillColor: myColor.tabcolor,
-              filled: true,
-              borderWidth: 0,
 
-            ),
-          ),
           Padding(
             padding: const EdgeInsets.only(left: 15, top: 15),
             child: CustomText(
@@ -85,9 +111,9 @@ class _HomeState extends State<Home> {
                 weight: FontWeight.w500,
                 color: myColor.textcolor),
           ),
-
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
+              
               stream: itemStream,
               builder: (context, itemSnapshot) {
                 if (itemSnapshot.connectionState == ConnectionState.waiting) {
@@ -95,6 +121,7 @@ class _HomeState extends State<Home> {
                 }
 
                 if (itemSnapshot.hasError) {
+                  print(itemSnapshot.error);
                   return Center(child: Text("Error: ${itemSnapshot.error}"));
                 }
 
@@ -129,8 +156,9 @@ class _HomeState extends State<Home> {
                     Map<String, dynamic> saved =
                         savedSnapshot.data?.data() as Map<String, dynamic>? ??
                             {};
-
-                    return GridView.builder(
+             return    
+                     GridView.builder(
+                      // itemCount: saved.length,
                       itemCount: 4,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
@@ -203,7 +231,7 @@ class _HomeState extends State<Home> {
                                                   const EdgeInsets.only(top: 8),
                                               child: CustomText(
                                                 text:
-                                                    "${property.setPrice ?? "N/A"} L",
+                                                    "${property.setPrice ?? "N/A"} ",
                                                 size: 17,
                                                 weight: FontWeight.w600,
                                                 color: myColor.textcolor,
@@ -244,89 +272,135 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+  Future<void> _toggleSaved(String itemId, bool currentStatus) async {
+    if (userId == null) {
+      // Show a message to user that they need to login
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please login to save items')),
+      );
+      return;
+    }
+
+    try {
+      await _firestore.collection('userSaved').doc(userId).set({
+        itemId: !currentStatus,
+      }, SetOptions(merge: true));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving item: $e')),
+      );
+    }
+  }
+
+
+   Future<List<DocumentSnapshot>> _getItemSuggestions(String query) async {
+    if (query.isEmpty) {
+      return [];
+    }
+
+    try {
+      String lowercaseQuery = query.toLowerCase();
+
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collectionGroup("item_List").get();
+
+      List<DocumentSnapshot> filteredResults = querySnapshot.docs.where((doc) {
+        String title =
+            (doc.data() as Map<String, dynamic>)['typ'] as String? ?? '';
+        return title.toLowerCase().contains(lowercaseQuery);
+      }).toList();
+
+      return filteredResults;
+    } catch (e) {
+      print("Error occurred during search: $e");
+      return [];
+    }
+  }
+
+
+
+   void _showFilterDialog(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setModalState) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Filter Properties",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 16),
+
+                // Filter by type dropdown
+                DropdownButton<String>(
+                  value: _selectedType,
+                  hint: Text("Select Type"),
+                  onChanged: (String? newValue) {
+                    setModalState(() {
+                      _selectedType = newValue;
+                    });
+                  },
+                  items: ['Home', 'Villa', 'Apartment'].map((type) {
+                    return DropdownMenuItem<String>(
+                      value: type,
+                      child: Text(type),
+                    );
+                  }).toList(),
+                ),
+
+                SizedBox(height: 16),
+
+                // Filter by price range slider
+                RangeSlider(
+                  values: _priceRange,
+                  min: 0,
+                  max: 1000000,
+                  divisions: 100,
+                  labels: RangeLabels(
+                    _priceRange.start.round().toString(),
+                    _priceRange.end.round().toString(),
+                  ),
+                  onChanged: (values) {
+                    setModalState(() {
+                      _priceRange = values;
+                    });
+                  },
+                ),
+
+                SizedBox(height: 16),
+
+                // Apply Filters button
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Close the bottom sheet
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FilteredPropertyListScreen(
+                          type: _selectedType,
+                          priceRange: _priceRange,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text("Apply Filters"),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
 }
 
-//  Future<List<DocumentSnapshot>> _getitemSuggestions(String query) async {
-//     if (query.isEmpty) {
-//       return [];
-//     }
 
-//     try {
-//       String lowercaseQuery = query.toLowerCase();
+}
 
-//       QuerySnapshot querySnapshot =
-//           await FirebaseFirestore.instance.collectionGroup('item_List').get();
 
-//       List<DocumentSnapshot> filteredResults = querySnapshot.docs.where((doc) {
-//         String typ =
-//             (doc.data() as Map<String, dynamic>)['typ'] as String? ?? '';
-//         return typ.toLowerCase().contains(lowercaseQuery);
-//       }).toList();
 
-//       return filteredResults;
-//     } catch (e) {
-//       print("Error occurred during search: $e");
-//       return [];
-//     }
-//   }
-
-// Padding(
-//            padding: const EdgeInsets.only(left: 20),
-//            child:
-//             SizedBox(
-//              height: 45,
-//              width: 300,
-//              child: Container(
-//                decoration: BoxDecoration(
-//                  border: Border.all(
-//                    color: Colors.grey, // Border color
-//                    width: 2.0, // Border width
-//                  ),
-//                  borderRadius: BorderRadius.circular(8), // Rounded corners
-//                ),
-//                child: TypeAheadField<DocumentSnapshot>(
-                 
-//            suggestionsCallback: (pattern) async {
-//                    return await _getitemSuggestions(pattern);
-//                  },
-//                  itemBuilder: (context, DocumentSnapshot suggestion) {
-//                    Map<String, dynamic> data =
-//               suggestion.data() as Map<String, dynamic>;
-//                    return ListTile(
-//             tileColor: Colors.black,
-//             leading: CircleAvatar(
-//               backgroundImage: NetworkImage(data['imageUrls'][0]),
-//             ),
-//             title: CustomText(
-//               text: data['name'] ?? 'No name',
-//               size: 15,
-//               weight: FontWeight.normal,
-//               color: myColor.textcolor,
-//             ),
-//             subtitle: CustomText(
-//               text: data['setPrice'] ?? 'No setPrice',
-//               size: 12,
-//               weight: FontWeight.normal,
-//               color: myColor.textcolor,
-//             ),
-//                    );
-//                  },
-//                  onSelected: (DocumentSnapshot suggestion) {
-//                    Map<String, dynamic> data =
-//               suggestion.data() as Map<String, dynamic>;
-//                    Property property = Property.fromFirestore(data);
-//                    Navigator.push(
-//             context,
-//             MaterialPageRoute(
-//               builder: (context) => AgencyChatList(
-//                 recipe: property,
-//                 recipeId: suggestion.id,
-//               ),
-//             ),
-//                    );
-//                  },
-                 
-//                ),
-//              ),
-//            ),
-//          ),

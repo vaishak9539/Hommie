@@ -39,7 +39,7 @@ class _UserViewHomeState extends State<UserViewHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: myColor.background,
-      appBar: CustomAppBar(title: "Home"),
+      appBar: CustomAppBar(title: "Home222"),
       body: StreamBuilder<QuerySnapshot>(
         stream: itemStream,
         builder: (context, itemSnapshot) {
@@ -102,7 +102,7 @@ class _UserViewHomeState extends State<UserViewHome> {
                         padding: const EdgeInsets.all(8.0),
                         child: InkWell(
                           onTap: () {
-                             Navigator.push(context,MaterialPageRoute(builder: (context) => UserPropertyView(homedetails:property, villadetails: null, apartmentdetails: null, ),));
+                             Navigator.push(context,MaterialPageRoute(builder: (context) => UserPropertyView(homedetails:property, villadetails: null, apartmentdetails: null,  ),));
                           },
                           child: Card(
                             elevation: 4,

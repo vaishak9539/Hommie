@@ -562,7 +562,8 @@ class _UserPropertyViewState extends State<UserPropertyView> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   CustomInkwellButton(onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserChat(agencyId : propertyDetails.agencyId,propertyId : propertyDetails.id),));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserAgencyChat(agencyId: propertyDetails.agencyId, propertyId: propertyDetails.id),));
+                    // Navigator.push(context, MaterialPageRoute(builder: (context) => UserChat(agencyId : propertyDetails.agencyId,propertyId : propertyDetails.id),));
                   }, text: "Chat"),
                   CustomInkwellButton(
                     width: 150.w,

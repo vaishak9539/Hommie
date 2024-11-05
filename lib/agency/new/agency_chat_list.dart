@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hommie/agency/new/agency_chat.dart';
 import 'package:hommie/model/utils/style/color.dart';
@@ -8,113 +9,91 @@ import 'package:hommie/model/utils/style/img_path.dart';
 import 'package:hommie/widgets/appbar.dart';
 import 'package:hommie/widgets/custom_card.dart';
 
-class AgencyChatList extends StatelessWidget {
-  const AgencyChatList({super.key,});
-  
+class AgencyChatList extends StatefulWidget {
+  const AgencyChatList({super.key});
+
+  @override
+  State<AgencyChatList> createState() => _AgencyChatListState();
+}
+
+class _AgencyChatListState extends State<AgencyChatList> {
+  final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
-    // final List chat = [AgencyChat()];
     return Scaffold(
       backgroundColor: myColor.background,
       appBar: CustomAppBar(title: "Chats"),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: _fetchChatRooms(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          }
 
-      body: StreamBuilder(stream: FirebaseFirestore.instance.collection("ChatRooms").snapshots(),
-       builder: (context, snapshot) {
-         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-         }
-         if (snapshot.hasError) {
-           return Center(child: Text("Error: ${snapshot.error}"));
-         }
-         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return Center(child: Text("No messages yet."));
-        }
-        return  ListView.builder(
-          
-          itemCount: snapshot.data!.docs.length,
-          itemBuilder: (context, index) {
-            
-        return Padding(
-          padding: const EdgeInsets.only(left: 10,right: 10,),
-          child: CustomCard(
-            child: SizedBox(
-              height: 60,
-              child: ListTile(
-                
-                onTap: () {
-                  // Navigator.push(context, MaterialPageRoute(builder: (context) => chat[index],));
-                },
-                leading: CircleAvatar(
-                  backgroundImage: AssetImage(icons[5]),
-                ),
-                title: Text("Arun"),
-                trailing: Column(
-                  children: [
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 20),
-                          child: Icon(Icons.cancel_outlined,color:myColor.errortext,),
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Center(child: Text("No chat rooms found."));
+          }
+
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              DocumentSnapshot document = snapshot.data!.docs[index];
+              Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+
+              String agencyId = data['receiverId'];
+              String propertyId = data['propertyId'];
+              bool isUserInitiating = data['isUserMessage'];
+
+              return Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                child: CustomCard(
+                  child: ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AgencyChat(
+                            agencyId: agencyId,
+                            propertyId: propertyId,
+                            isUserInitiating: isUserInitiating,
+                          ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: Icon(Icons.check_circle_outline,color: Colors.green,),
-                        )
-                      ],
+                      );
+                    },
+                    leading: CircleAvatar(
+                      backgroundImage: AssetImage(icons[5]),
                     ),
-                  ],
+                    title: Text(isUserInitiating
+                        ? data['senderName']
+                        : data['senderName']),
+                    subtitle: Text(data['propertyName']),
+                  ),
                 ),
-              ),
-            ),
-          ),
-        );
-      }, );
-       },
-       )
+              );
+            },
+          );
+        },
+      ),
     );
+  }
+
+  // Fetch all chat rooms where the current user is either the sender or receiver
+  Stream<QuerySnapshot> _fetchChatRooms() {
+    String currentUserId = _firebaseAuth.currentUser!.uid;
+
+    return _fireStore
+        .collectionGroup("Messages")
+        .where('participants', arrayContains: currentUserId)
+        .snapshots()
+        .handleError((error) {
+      print("Error fetching chat rooms: $error");
+    });
   }
 }
 
-//  ListView.builder(itemBuilder: (context, index) {
-//         return Padding(
-//           padding: const EdgeInsets.only(left: 10,right: 10,),
-//           child: CustomCard(
-//             child: SizedBox(
-//               height: 60,
-//               child: ListTile(
-//                 onTap: () {
-//                   Navigator.push(context, MaterialPageRoute(builder: (context) => chat[index],));
-//                 },
-//                 leading: CircleAvatar(
-//                   backgroundImage: AssetImage(icons[5]),
-//                 ),
-//                 title: Text("Arun"),
-//                 trailing: Column(
-//                   children: [
-//                     SizedBox(
-//                       height: 20,
-//                     ),
-//                     Row(
-//                       mainAxisSize: MainAxisSize.min,
-//                       children: [
-//                         Padding(
-//                           padding: const EdgeInsets.only(right: 20),
-//                           child: Icon(Icons.cancel_outlined,color:myColor.errortext,),
-//                         ),
-//                         Padding(
-//                           padding: const EdgeInsets.only(right: 10),
-//                           child: Icon(Icons.check_circle_outline,color: Colors.green,),
-//                         )
-//                       ],
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           ),
-//         );
-//       }, itemCount: 2),

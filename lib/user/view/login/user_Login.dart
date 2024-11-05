@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -25,38 +28,37 @@ class _UserLoginState extends State<UserLogin> {
   final userEmailController = TextEditingController();
   bool userSecureText = false;
 
-
-
   Future<void> userSignWithEmailAndPassword() async {
     if (formkey.currentState!.validate()) {
       String email = userEmailController.text.trim();
       String password = userPasswordController.text.trim();
 
-      var querySnapshot = await FirebaseFirestore.instance
-          .collection("Users")
-          .where("Email", isEqualTo: email)
-          .limit(1)
-          .get();
+      try {
+        // Use Firebase Authentication for signing in
+        UserCredential userCredential = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password);
 
-      if (querySnapshot.docs.isNotEmpty) {
-        var userData = querySnapshot.docs.first.data();
-        var passwordFromDB = userData['Password'];
-        if (passwordFromDB != null && passwordFromDB == password) {
-          var userUid = userData["AuthUid"];
-          if (userUid != null) {
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            await prefs.setString("userUid", userUid);
-          }
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          String? userId = prefs.getString("userUid");
-          print("Shared Preference User ID: $userId");
-          
+        // Get the user ID after successful authentication
+        String authUid = userCredential.user!.uid;
 
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
+        // Now you can fetch additional agency data from Firestore if needed
+        var querySnapshot = await FirebaseFirestore.instance
+            .collection("Users")
+            .where("AuthUid", isEqualTo: authUid)
+            .limit(1)
+            .get();
+
+        if (querySnapshot.docs.isNotEmpty) {
+          log("user login : $authUid");
+
+          // Navigate to the agency dashboard or home screen
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
             return UserBottomNavigation();
           }));
+
           Fluttertoast.showToast(
-            msg: 'Succesfully loggined',
+            msg: 'Successfully logged in',
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.BOTTOM,
             timeInSecForIosWeb: 1,
@@ -65,9 +67,9 @@ class _UserLoginState extends State<UserLogin> {
             fontSize: 16.0,
           );
         } else {
-          print('Incorrect password');
+          print('No matching agency found for this user');
           Fluttertoast.showToast(
-            msg: 'Incorrect Password',
+            msg: 'No agency record found',
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.BOTTOM,
             timeInSecForIosWeb: 1,
@@ -76,10 +78,10 @@ class _UserLoginState extends State<UserLogin> {
             fontSize: 16.0,
           );
         }
-      } else {
-        print('User not found');
+      } catch (e) {
+        print('Authentication failed: $e');
         Fluttertoast.showToast(
-          msg: 'User not found',
+          msg: 'Authentication failed: ${e.toString()}',
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,

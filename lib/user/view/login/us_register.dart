@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/user/view/home/user_account/user_terms_conditions.dart';
 import 'package:hommie/user/view/home/user_bottomnavigation.dart';
+import 'package:hommie/user/view/login/user_Login.dart';
 import 'package:hommie/widgets/cu_inkwell_button.dart';
 import 'package:hommie/widgets/custom_text.dart';
 import 'package:hommie/widgets/custom_textfield.dart';
@@ -77,7 +78,7 @@ class _UserRegisterState extends State<UserRegister> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => UserBottomNavigation(),
+                builder: (context) => UserLogin(),
               ));
 
           // Reset form state after successful registration

@@ -41,10 +41,8 @@ class _UserAccountState extends State<UserAccount> {
 
   Future<void> _getuserDetails() async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      setState(() {
-        userId = prefs.getString("userUid");
-      });
+      final user = FirebaseAuth.instance.currentUser;
+      userId = user!.uid;
 
       if (userId != null) {
         DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
@@ -57,7 +55,7 @@ class _UserAccountState extends State<UserAccount> {
           // Map<String, dynamic>? userData =
           //     userSnapshot.data() as Map<String, dynamic>?;
 
-          if (userSnapshot != null) {
+          if (userSnapshot.exists) {
             setState(() {
               userName = userSnapshot["Name"] ?? "Name not available";
               userEmail = userSnapshot["Email"] ?? "Email not available";

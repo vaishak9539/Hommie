@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,6 +34,7 @@ class _AgencyProfileState extends State<AgencyProfile> {
   File? image;
   String? imageurl;
   bool isLoading = false;
+  var agencyId;
 
   Future<void> pickimage() async {
     ImagePicker picked = ImagePicker();
@@ -50,11 +52,11 @@ class _AgencyProfileState extends State<AgencyProfile> {
     });
 
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? agencyId = prefs.getString("agencyUid");
+      final user = FirebaseAuth.instance.currentUser;
+      agencyId = user!.uid;
 
       // Print agencyId for debugging
-      print("Agency ID retrieved from SharedPreferences: $agencyId");
+      print("Agency ID retrieved from FireBase: $agencyId");
 
       if (agencyId != null && agencyId.isNotEmpty) {
         DocumentSnapshot agencySnapshot = await FirebaseFirestore.instance
@@ -114,9 +116,8 @@ class _AgencyProfileState extends State<AgencyProfile> {
         isLoading = true;
       });
       try {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        var agencyId = prefs.getString("agencyUid");
-        print("Shared Preference Agency ID : $agencyId");
+       final user = FirebaseAuth.instance.currentUser;
+      agencyId = user!.uid;
 
         if (agencyId != null && agencyId.isNotEmpty) {
           await FirebaseFirestore.instance

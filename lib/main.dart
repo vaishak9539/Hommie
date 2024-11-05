@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hommie/firebase_options.dart';
 import 'package:hommie/select_page.dart';
 import 'package:hommie/admin/adminprovider/adminprovider.dart';
-import 'package:hommie/user/userprovider/user_provider_class.dart';
 import 'package:provider/provider.dart';
 
 void main() async {

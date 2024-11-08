@@ -1,11 +1,11 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
+import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hommie/agency/new/agency_chat.dart';
 import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/model/utils/style/img_path.dart';
+import 'package:hommie/user/view/home/user_chat/user_chat.dart';
 import 'package:hommie/widgets/appbar.dart';
 import 'package:hommie/widgets/custom_card.dart';
 
@@ -45,8 +45,7 @@ class _AgencyChatListState extends State<AgencyChatList> {
             itemBuilder: (context, index) {
               DocumentSnapshot document = snapshot.data!.docs[index];
               Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-
-              String agencyId = data['receiverId'];
+              String agencyId = data['senderId'];
               String propertyId = data['propertyId'];
               bool isUserInitiating = data['isUserMessage'];
 
@@ -59,7 +58,7 @@ class _AgencyChatListState extends State<AgencyChatList> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => AgencyChat(
-                            agencyId: agencyId,
+                            userId: agencyId,
                             propertyId: propertyId,
                             isUserInitiating: isUserInitiating,
                           ),
@@ -83,17 +82,17 @@ class _AgencyChatListState extends State<AgencyChatList> {
     );
   }
 
-  // Fetch all chat rooms where the current user is either the sender or receiver
+  // Fetch all unique chat rooms where the current user is either the sender or receiver
   Stream<QuerySnapshot> _fetchChatRooms() {
     String currentUserId = _firebaseAuth.currentUser!.uid;
+    log("Current User ID: $currentUserId"); // Debugging line
 
     return _fireStore
-        .collectionGroup("Messages")
-        .where('participants', arrayContains: currentUserId)
+        .collectionGroup('Messages')
+        .where('participants', arrayContains: currentUserId) // Fetch chat rooms where the user is a participant
         .snapshots()
         .handleError((error) {
-      print("Error fetching chat rooms: $error");
+      log("Error fetching chat rooms: $error");
     });
   }
 }
-

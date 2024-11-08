@@ -17,7 +17,8 @@ class AgencyBottomNav extends StatefulWidget {
 class _AgencyBottomNavState extends State<AgencyBottomNav> {
   List<Widget> pages = [
      AgencyItemList(),
-    AgencyHistory(),
+    // AgencyHistory(),
+    AgencyChatList(),
     const AgencyAccount(),
   ];
   int selectedIndex = 0;

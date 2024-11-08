@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -6,13 +8,13 @@ import 'package:hommie/model/utils/style/color.dart';
 import 'package:hommie/widgets/custom_textfield.dart';
 
 class AgencyChat extends StatefulWidget {
-  var agencyId;
+  var userId;
   final String propertyId;
   final bool isUserInitiating;
 
   AgencyChat({
     super.key,
-    required this.agencyId,
+    required this.userId,
     required this.propertyId,
     this.isUserInitiating = true,
   });
@@ -45,27 +47,33 @@ class _AgencyChatState extends State<AgencyChat> {
           .get();
 
       DocumentSnapshot agencyDoc = await _fireStore
-          .collection('Agencies')
-          .doc(widget.agencyId)
+          .collection('Users')
+          .doc(widget.userId)
           .get();
+
+          
 
       DocumentSnapshot propertyDoc = await _fireStore
           .collection('items')
-          .doc(widget.agencyId)
+          .doc(widget.userId)
           .collection('item_List')
           .doc(widget.propertyId)
           .get();
 
       setState(() {
         senderName = widget.isUserInitiating 
-            ? userDoc.get('Name') 
+            ? agencyDoc.get('Name')
             : agencyDoc.get('Name');
         
         receiverName = widget.isUserInitiating 
-            ? agencyDoc.get('Name') 
+            ? userDoc.get('Name')
             : userDoc.get('Name');
         
         propertyName = propertyDoc.get('name');
+
+        log("send $senderName");
+        log("rec $receiverName");
+        log("pro $propertyName");
       });
     } catch (e) {
       print("Error fetching chat participant info: $e");
@@ -74,7 +82,7 @@ class _AgencyChatState extends State<AgencyChat> {
 
   String _generateChatRoomId() {
     String currentUserId = _firebaseAuth.currentUser!.uid;
-    List<String> ids = [currentUserId, widget.agencyId];
+    List<String> ids = [currentUserId, widget.userId];
     ids.sort();
     return "${ids[0]}_${ids[1]}_${widget.propertyId}";
   }
@@ -97,14 +105,14 @@ class _AgencyChatState extends State<AgencyChat> {
       final messageData = {
         'senderId': currentUser.uid,
         'senderName': senderName ?? 'Unknown Sender',
-        'receiverId': widget.agencyId,
+        'receiverId': widget.userId,
         'receiverName': receiverName ?? 'Unknown Receiver',
         'message': _messageController.text.trim(),
         'timestamp': now,
         'formattedTime': formattedTime,
         'propertyId': widget.propertyId,
         'propertyName': propertyName ?? 'Unknown Property',
-        'participants': [currentUser.uid, widget.agencyId],
+        'participants': [currentUser.uid, widget.userId],
         'isUserMessage': widget.isUserInitiating,
       };
 

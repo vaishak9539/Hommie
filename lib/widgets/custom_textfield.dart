@@ -157,6 +157,7 @@ class CuTextField extends StatelessWidget {
     return Padding(
       padding: outlinePadding,
       child: TextFormField(
+        
         readOnly: readOnly,
         keyboardType: keyboardType,
         controller: controller,
